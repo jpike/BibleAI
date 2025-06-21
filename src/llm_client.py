@@ -2,7 +2,9 @@
 LLM Client for connecting to local LM Studio OpenAI-compatible API.
 """
 
-import requests
+import urllib.request
+import urllib.parse
+import urllib.error
 import json
 from typing import Dict, List, Any, Optional
 import time
@@ -24,13 +26,55 @@ class LLMClient:
         self.base_url = base_url.rstrip('/')
         self.api_key = api_key
         self.timeout = timeout
-        self.session = requests.Session()
         
         # Set headers for OpenAI-compatible API
-        self.session.headers.update({
+        self.headers = {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {api_key}'
-        })
+        }
+    
+    def _make_request(self, url: str, method: str = "GET", data: Optional[Dict] = None) -> Optional[Dict]:
+        """
+        Make an HTTP request using urllib.
+        
+        Args:
+            url: The URL to request.
+            method: HTTP method (GET or POST).
+            data: Data to send with POST request.
+            
+        Returns:
+            Response data as dictionary, or None if failed.
+        """
+        try:
+            # Prepare the request
+            if data:
+                data_bytes = json.dumps(data).encode('utf-8')
+            else:
+                data_bytes = None
+            
+            # Create request object
+            req = urllib.request.Request(url, data=data_bytes, headers=self.headers, method=method)
+            
+            # Make the request with timeout
+            with urllib.request.urlopen(req, timeout=self.timeout) as response:
+                response_data = response.read()
+                return json.loads(response_data.decode('utf-8'))
+                
+        except urllib.error.HTTPError as e:
+            print(f"HTTP Error {e.code}: {e.reason}")
+            if hasattr(e, 'read'):
+                error_body = e.read().decode('utf-8')
+                print(f"Error body: {error_body}")
+            return None
+        except urllib.error.URLError as e:
+            print(f"URL Error: {e.reason}")
+            return None
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error: {e}")
+            return None
+        except Exception as e:
+            print(f"Request error: {e}")
+            return None
     
     def test_connection(self) -> bool:
         """
@@ -40,8 +84,8 @@ class LLMClient:
             True if connection successful, False otherwise.
         """
         try:
-            response = self.session.get(f"{self.base_url}/models", timeout=self.timeout)
-            return response.status_code == 200
+            response_data = self._make_request(f"{self.base_url}/models")
+            return response_data is not None
         except Exception as e:
             print(f"Connection test failed: {e}")
             return False
@@ -70,22 +114,16 @@ class LLMClient:
             "stream": False
         }
         
-        try:
-            response = self.session.post(
-                f"{self.base_url}/chat/completions",
-                json=payload,
-                timeout=self.timeout
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                return result['choices'][0]['message']['content']
-            else:
-                print(f"API request failed: {response.status_code} - {response.text}")
-                return None
-                
-        except Exception as e:
-            print(f"Error generating response: {e}")
+        response_data = self._make_request(
+            f"{self.base_url}/chat/completions",
+            method="POST",
+            data=payload
+        )
+        
+        if response_data and 'choices' in response_data:
+            return response_data['choices'][0]['message']['content']
+        else:
+            print(f"Failed to generate response: {response_data}")
             return None
     
     def generate_with_retry(self, messages: List[Dict[str, str]], 

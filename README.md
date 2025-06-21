@@ -9,6 +9,7 @@ An AI-powered Bible study application that uses local LLMs to help with Bible re
 - **Study Guides**: Generate comprehensive, devotional, or theological study guides
 - **Multi-Translation Support**: Works with KJV, YLT, and WEB translations
 - **Local LLM Integration**: Uses your local LM Studio setup
+- **No External Dependencies**: Uses only Python built-in libraries
 
 ## Setup
 
@@ -21,11 +22,7 @@ An AI-powered Bible study application that uses local LLMs to help with Bible re
 ### Installation
 
 1. Clone or download this project
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
+2. No additional dependencies required - uses only Python built-in libraries!
 3. Start LM Studio and load a model
 4. Start the local server in LM Studio (usually runs on `http://localhost:1234`)
 
