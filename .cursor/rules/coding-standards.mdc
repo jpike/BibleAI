@@ -1,0 +1,17 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Coding standards you should follow include:
+- I want high-quality code - easily readable, well-documented, maintainable, and high-performance.
+- That means well-named variables (no short one or two letter names), well-named constants for magic numbers, and comments using Doxygen style for code (along with comments in the body of functions).
+- UPPERCASE comments should be used in function bodies to summarize major blocks of code, and other comments to elaborate on more details/explain why should be written using normal English sentence capitalization.
+- All comments should end with a period.
+- The following naming conventions should be followed:
+  - Data Types (classes, structs, interfaces, etc.): `PascalCase` or `UpperCamelCase` (e.g., `MyClass`)
+  - Functions/Methods: `PascalCase` or `UpperCamelCase` (e.g., `MyFunction`)
+  - Member variables/fields: `PascalCase` or `UpperCamelCase` (e.g., `MyMemberVariable`)
+  - Local variables/parameters: `lower_snake_case` (e.g., `lower_snake_case`)
+  - Constants and enum values: `UPPER_SNAKE_CASE` (e.g., `MY_CONSTANT`)
+
