@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-## @package test_parser
+## @package TestParser
 ## Test script for the Bible parser fix.
 
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.bible_parser import BibleParser
+from src.BibleParser import BibleParser
 
 ## Test the Bible parser with the namespace fix.
 def test_parser():

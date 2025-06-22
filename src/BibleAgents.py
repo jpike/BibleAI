@@ -1,10 +1,10 @@
-## @package bible_agents
+## @package BibleAgents
 ## Bible Study Agents for different types of analysis and tasks.
 
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
-from bible_parser import BibleVerse, BibleParser
-from llm_client import LLMClient
+from BibleParser import BibleVerse, BibleParser
+from LlmClient import LLMClient
 
 ## Response from a Bible study agent.
 @dataclass
@@ -21,9 +21,6 @@ class TopicResearchAgent:
     ## @param[in] bible_parser - Initialized Bible parser instance.
     ## @param[in] llm_client - Initialized LLM client instance.
     def __init__(self, bible_parser: BibleParser, llm_client: LLMClient):
-        ## Initialize the topic research agent.
-        ## @param[in] bible_parser - Initialized Bible parser instance.
-        ## @param[in] llm_client - Initialized LLM client instance.
         self.bible_parser = bible_parser
         self.llm_client = llm_client
         

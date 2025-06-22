@@ -1,4 +1,4 @@
-## @package bible_parser
+## @package BibleParser
 ## Bible Data Parser for OSIS XML format.
 ## Handles parsing and indexing Bible verses from multiple translations.
 

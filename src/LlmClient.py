@@ -1,4 +1,4 @@
-## @package llm_client
+## @package LlmClient
 ## LLM Client for connecting to local LM Studio OpenAI-compatible API.
 
 import urllib.request

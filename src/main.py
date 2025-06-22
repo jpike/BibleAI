@@ -1,4 +1,4 @@
-## @package main
+## @package Main
 ## Main application for the Agentic Bible Study Program.
 
 import sys
@@ -9,10 +9,9 @@ from typing import Optional
 # Add src directory to path for imports
 sys.path.append(str(Path(__file__).parent))
 
-from bible_parser import BibleParser
-from llm_client import LLMClient
-from bible_agents import TopicResearchAgent, CrossReferenceAgent, StudyGuideAgent
-
+from BibleParser import BibleParser
+from LlmClient import LLMClient
+from BibleAgents import TopicResearchAgent, CrossReferenceAgent, StudyGuideAgent
 
 ## Main application class for the Bible study program.
 class BibleStudyApp:
@@ -248,7 +247,6 @@ def main():
     # Create and run the application
     app = BibleStudyApp(data_dir)
     app.run_interactive()
-
 
 if __name__ == "__main__":
     main() 

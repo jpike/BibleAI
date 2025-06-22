@@ -3,15 +3,106 @@ description:
 globs: 
 alwaysApply: true
 ---
-Coding standards you should follow include:
-- I want high-quality code - easily readable, well-documented, maintainable, and high-performance.
-- That means well-named variables (no short one or two letter names), well-named constants for magic numbers, and comments using Doxygen style for code (along with comments in the body of functions).
-- UPPERCASE comments should be used in function bodies to summarize major blocks of code, and other comments to elaborate on more details/explain why should be written using normal English sentence capitalization.
-- All comments should end with a period.
-- The following naming conventions should be followed:
-  - Data Types (classes, structs, interfaces, etc.): `PascalCase` or `UpperCamelCase` (e.g., `MyClass`)
-  - Functions/Methods: `PascalCase` or `UpperCamelCase` (e.g., `MyFunction`)
-  - Member variables/fields: `PascalCase` or `UpperCamelCase` (e.g., `MyMemberVariable`)
-  - Local variables/parameters: `lower_snake_case` (e.g., `lower_snake_case`)
-  - Constants and enum values: `UPPER_SNAKE_CASE` (e.g., `MY_CONSTANT`)
+# Coding Standards and Naming Conventions
+
+## Overview
+This project follows high-quality coding standards with specific naming conventions and documentation requirements.
+
+## Code Quality Standards
+- **Readability**: Code should be easily readable and well-documented
+- **Maintainability**: Code should be maintainable and well-structured
+- **Performance**: Code should be high-performance where applicable
+- **Documentation**: All code should be well-documented using Doxygen style
+
+## Naming Conventions
+
+### Data Types (Classes, Structs, Interfaces, etc.)
+Use `PascalCase` or `UpperCamelCase`:
+```python
+class BibleParser:
+class TopicResearchAgent:
+class AgentResponse:
+```
+
+### Functions/Methods
+Use `PascalCase` or `UpperCamelCase`:
+```python
+def ParseTranslation(self):
+def ResearchTopic(self):
+def FindCrossReferences(self):
+```
+
+### Member Variables/Fields
+Use `PascalCase` or `UpperCamelCase`:
+```python
+self.DataDirectory = data_directory
+self.Translations = {}
+self.VerseIndex = {}
+```
+
+### Local Variables/Parameters
+Use `lower_snake_case`:
+```python
+def my_function(param_name: str) -> str:
+    local_variable = "value"
+    another_local = 42
+```
+
+### Constants and Enum Values
+Use `UPPER_SNAKE_CASE`:
+```python
+MAX_RESULTS = 50
+DEFAULT_TIMEOUT = 30
+```
+
+## Comment Standards
+
+### Function Body Comments
+Use `UPPERCASE` comments to summarize major blocks:
+```python
+def complex_function(self):
+    # VALIDATE INPUT PARAMETERS
+    if not self.is_valid():
+        return None
+    
+    # PROCESS THE DATA
+    result = self.process_data()
+    
+    # RETURN THE RESULT
+    return result
+```
+
+### Detailed Comments
+Use normal English sentence capitalization for detailed explanations:
+```python
+# This comment explains why we need to normalize the text.
+# It provides context for the following operation.
+self.text = re.sub(r'\s+', ' ', self.text)
+```
+
+## Documentation Requirements
+- All classes must have Doxygen documentation
+- All public methods must have Doxygen documentation
+- All parameters must be documented with `@param[in]`, `@param[out]`, or `@param[in,out]`
+- All return values must be documented with `@return`
+- File-level documentation must use `@package` tag
+
+## Code Organization
+- Group related functionality into classes
+- Use clear separation of concerns
+- Keep functions focused on single responsibilities
+- Use meaningful variable names (no short one or two letter names)
+- Use constants for magic numbers
+
+## Error Handling
+- Use appropriate exception handling
+- Provide meaningful error messages
+- Log errors when appropriate
+- Return meaningful error states
+
+## Type Annotations
+- Use type hints for all function parameters and return values
+- Use `Optional[Type]` for nullable types
+- Use `List[Type]`, `Dict[KeyType, ValueType]` for collections
+- Type information belongs in annotations, not in Doxygen comments
 
