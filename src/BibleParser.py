@@ -8,6 +8,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+# Search Constants
+DEFAULT_SEARCH_MAX_RESULTS = 50
 
 ## Represents a single Bible verse with metadata.
 @dataclass
@@ -144,7 +146,7 @@ class BibleParser:
     ## @param[in] max_results - Maximum number of results to return.
     ## @return List of matching BibleVerse objects.
     def SearchVerses(self, query: str, translation: Optional[str] = None, 
-                     max_results: int = 50) -> List[BibleVerse]:
+                     max_results: int = DEFAULT_SEARCH_MAX_RESULTS) -> List[BibleVerse]:
         query_lower = query.lower()
         results = []
         
@@ -170,7 +172,7 @@ class BibleParser:
     ## @return List of matching BibleVerse objects.
     def GetVersesByTopicKeywords(self, keywords: List[str], 
                                    translation: Optional[str] = None,
-                                   max_results: int = 50) -> List[BibleVerse]:
+                                   max_results: int = DEFAULT_SEARCH_MAX_RESULTS) -> List[BibleVerse]:
         keywords_lower = [kw.lower() for kw in keywords]
         results = []
         

@@ -1,0 +1,142 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Magic Numbers and Constants Best Practices
+
+## Overview
+Replace magic number literals with well-named constants to improve code readability, maintainability, and self-documentation.
+
+## What Are Magic Numbers?
+Magic numbers are literal numeric values in code that lack clear meaning or context. Examples:
+- `60` for separator line length
+- `1` for array indices or split operations
+- `0` for default values
+- `30` for timeouts
+- `1000` for token limits
+
+## When to Replace Magic Numbers
+
+### ✅ Replace These Magic Numbers:
+- **UI/Display values**: Line lengths, margins, padding
+- **Configuration limits**: Timeouts, retry counts, result limits
+- **Array indices**: When the meaning isn't immediately obvious
+- **Default values**: When the value represents a specific concept
+- **Mathematical constants**: Offsets, multipliers, thresholds
+
+### ❌ Keep These Literals:
+- **URLs and ports**: `localhost:1234/v1`
+- **List indices**: `[0]`, `[1]` when context is clear
+- **String operations**: `split(' ', 1)` when meaning is obvious
+- **Enumeration**: `enumerate(items, 1)` when starting at 1 is clear
+- **Example references**: `"John 3:16"` in documentation
+- **Prompt structure**: Numbered lists in prompts
+- **Reasonable defaults**: `0.7` for temperature
+
+## Constant Naming Conventions
+
+### Use UPPER_SNAKE_CASE for constants:
+```python
+SEPARATOR_LINE_LENGTH = 60
+DEFAULT_TIMEOUT_SECONDS = 30
+COMMAND_SPLIT_MAX_SPLITS = 1
+FIRST_CHOICE_INDEX = 0
+```
+
+### Descriptive Names:
+- **Good**: `SEPARATOR_LINE_LENGTH`, `DEFAULT_SEARCH_MAX_RESULTS`
+- **Bad**: `LENGTH`, `MAX_RESULTS`
+
+## Constant Placement Strategy
+
+### Global Constants
+Define at module level when used across multiple functions/classes:
+```python
+# UI Constants
+SEPARATOR_LINE_LENGTH = 60
+DEFAULT_SEARCH_MAX_RESULTS = 10
+```
+
+### Local Constants
+Define as close as possible to first usage when only used in one place:
+
+```python
+def parse_command(user_input: str):
+    # Command parsing constants
+    COMMAND_SPLIT_MAX_SPLITS = 1
+    COMMAND_INDEX = 0
+    ARGS_INDEX = 1
+    
+    parts = user_input.split(' ', COMMAND_SPLIT_MAX_SPLITS)
+    command = parts[COMMAND_INDEX].lower()
+    args = parts[ARGS_INDEX] if len(parts) > ARGS_INDEX else ""
+```
+
+### Method-Level Constants
+Define right before usage within a method:
+```python
+def search_verses(self, query: str):
+    # Search configuration
+    ENUMERATION_START = 1
+    
+    for i, verse in enumerate(verses, ENUMERATION_START):
+        print(f"{i}. {verse.text}")
+```
+
+## Examples from BibleAI Project
+
+### Before (Magic Numbers):
+```python
+print("="*60)
+parts = user_input.split(' ', 1)
+command = parts[0].lower()
+args = parts[1] if len(parts) > 1 else ""
+for i, verse in enumerate(verses, 1):
+```
+
+### After (Well-Named Constants):
+```python
+# UI Constants
+SEPARATOR_LINE_LENGTH = 60
+
+# Command parsing constants
+COMMAND_SPLIT_MAX_SPLITS = 1
+COMMAND_INDEX = 0
+ARGS_INDEX = 1
+
+print("="*SEPARATOR_LINE_LENGTH)
+parts = user_input.split(' ', COMMAND_SPLIT_MAX_SPLITS)
+command = parts[COMMAND_INDEX].lower()
+args = parts[ARGS_INDEX] if len(parts) > ARGS_INDEX else ""
+
+# Enumeration constant
+ENUMERATION_START = 1
+for i, verse in enumerate(verses, ENUMERATION_START):
+```
+
+## Benefits
+
+1. **Self-Documenting**: Constants clearly explain what numbers represent
+2. **Maintainable**: Easy to change values in one place
+3. **Readable**: Code intent is immediately clear
+4. **Consistent**: Similar operations use the same constants
+5. **Testable**: Constants can be easily modified for testing
+
+## Implementation Checklist
+
+- [ ] Identify magic numbers in code
+- [ ] Determine if they should be constants (use guidelines above)
+- [ ] Create descriptive constant names in UPPER_SNAKE_CASE
+- [ ] Place constants close to their first usage
+- [ ] Replace all occurrences of magic numbers with constants
+- [ ] Test that code compiles and functions correctly
+- [ ] Verify constants are self-documenting
+
+## Related Files
+This guidance was applied to improve the BibleAI project files:
+- [src/Main.py](mdc:src/Main.py) - UI and command parsing constants
+- [src/LlmClient.py](mdc:src/LlmClient.py) - LLM client configuration constants
+- [src/BibleAgents.py](mdc:src/BibleAgents.py) - Agent behavior constants
+- [src/BibleParser.py](mdc:src/BibleParser.py) - Search and parsing constants
+

@@ -1,10 +1,17 @@
 ## @package BibleAgents
-## Bible Study Agents for different types of analysis and tasks.
+## AI Agents for Bible study tasks including topic research, cross-references, and study guides.
 
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from BibleParser import BibleVerse, BibleParser
 from LlmClient import LLMClient
+
+# Agent Constants
+DEFAULT_TOPIC_RESEARCH_MAX_VERSES = 20
+DEFAULT_CROSS_REFERENCE_MAX_RELATED = 15
+DEFAULT_STUDY_GUIDE_MAX_VERSES = 30
+DEFAULT_KEYWORD_COUNT = 5
+MIN_WORD_LENGTH_FOR_KEYWORDS = 4
 
 ## Response from a Bible study agent.
 @dataclass
@@ -32,7 +39,7 @@ class TopicResearchAgent:
     ## @param[in] max_verses - Maximum number of verses to include.
     ## @return AgentResponse with research results.
     def ResearchTopic(self, topic: str, translation: str = "KJV", 
-                      max_verses: int = 20) -> AgentResponse:
+                      max_verses: int = DEFAULT_TOPIC_RESEARCH_MAX_VERSES) -> AgentResponse:
         # Generate keywords for the topic
         keyword_prompt = f"""
         Given the topic "{topic}", generate 5-10 relevant keywords that would help find Bible verses about this topic.
@@ -204,15 +211,20 @@ class CrossReferenceAgent:
     def _ParseReference(self, reference: str) -> Optional[tuple]:
         import re
         
+        # Regex group indices for Bible reference parsing
+        BOOK_GROUP_INDEX = 1
+        CHAPTER_GROUP_INDEX = 2
+        VERSE_GROUP_INDEX = 3
+        
         # Simple parsing for common formats like "John 3:16"
         # Pattern for "Book Chapter:Verse" format
         pattern = r'(\w+)\s+(\d+):(\d+)'
         match = re.search(pattern, reference)
         
         if match:
-            book = match.group(1)
-            chapter = int(match.group(2))
-            verse = int(match.group(3))
+            book = match.group(BOOK_GROUP_INDEX)
+            chapter = int(match.group(CHAPTER_GROUP_INDEX))
+            verse = int(match.group(VERSE_GROUP_INDEX))
             return (book, chapter, verse)
         
         return None
@@ -223,7 +235,7 @@ class CrossReferenceAgent:
     ## @param[in] max_related - Maximum number of related verses to find.
     ## @return List of related Bible verses.
     def _FindRelatedVerses(self, target_verse: BibleVerse, translation: str, 
-                           max_related: int = 15) -> List[BibleVerse]:
+                           max_related: int = DEFAULT_CROSS_REFERENCE_MAX_RELATED) -> List[BibleVerse]:
         # Extract key terms from the target verse
         key_terms = self._ExtractKeyTerms(target_verse.text)
         
@@ -246,13 +258,13 @@ class CrossReferenceAgent:
     def _ExtractKeyTerms(self, text: str) -> List[str]:
         # Simple approach: extract words longer than 4 characters
         words = text.split()
-        key_terms = [word.lower() for word in words if len(word) > 4]
+        key_terms = [word.lower() for word in words if len(word) > MIN_WORD_LENGTH_FOR_KEYWORDS]
         
         # Remove common words
         common_words = {'which', 'that', 'this', 'with', 'from', 'they', 'have', 'were', 'said', 'unto', 'them', 'will', 'shall'}
         key_terms = [term for term in key_terms if term not in common_words]
         
-        return key_terms[:5]  # Return top 5 terms
+        return key_terms[:DEFAULT_KEYWORD_COUNT]  # Return top 5 terms
     
     ## Format verses for LLM analysis.
     ## @param[in] verses - List of Bible verses to format.
@@ -284,7 +296,7 @@ class StudyGuideAgent:
                           guide_type: str = "comprehensive") -> AgentResponse:
         # First, research the topic to get relevant verses
         topic_agent = TopicResearchAgent(self.BibleParser, self.LlmClient)
-        topic_research = topic_agent.ResearchTopic(topic, translation, max_verses=30)
+        topic_research = topic_agent.ResearchTopic(topic, translation, max_verses=DEFAULT_STUDY_GUIDE_MAX_VERSES)
         
         if not topic_research.success:
             return topic_research

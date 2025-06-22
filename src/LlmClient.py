@@ -8,6 +8,11 @@ import json
 from typing import Dict, List, Any, Optional
 import time
 
+# LLM Client Constants
+DEFAULT_TIMEOUT_SECONDS = 30
+DEFAULT_MAX_TOKENS = 1000
+DEFAULT_MAX_RETRIES = 3
+DEFAULT_BACKOFF_MULTIPLIER = 1
 
 ## Client for interacting with local LLM via OpenAI-compatible API.
 class LLMClient:
@@ -16,7 +21,7 @@ class LLMClient:
     ## @param[in] api_key - API key (usually not needed for local LM Studio).
     ## @param[in] timeout - Request timeout in seconds.
     def __init__(self, base_url: str = "http://localhost:1234/v1", 
-                 api_key: str = "not-needed", timeout: int = 30):
+                 api_key: str = "not-needed", timeout: int = DEFAULT_TIMEOUT_SECONDS):
         ## Base URL for the LM Studio API.
         self.BaseUrl: str = base_url.rstrip('/')
         ## API key for authentication (usually not needed for local LM Studio).
@@ -86,7 +91,10 @@ class LLMClient:
     def GenerateResponse(self, messages: List[Dict[str, str]], 
                          model: str = "local-model",
                          temperature: float = 0.7,
-                         max_tokens: int = 1000) -> Optional[str]:
+                         max_tokens: int = DEFAULT_MAX_TOKENS) -> Optional[str]:
+        # Response parsing constants
+        FIRST_CHOICE_INDEX = 0
+        
         payload = {
             "model": model,
             "messages": messages,
@@ -102,7 +110,7 @@ class LLMClient:
         )
         
         if response_data and 'choices' in response_data:
-            return response_data['choices'][0]['message']['content']
+            return response_data['choices'][FIRST_CHOICE_INDEX]['message']['content']
         else:
             print(f"Failed to generate response: {response_data}")
             return None
@@ -113,15 +121,19 @@ class LLMClient:
     ## @param[in] **kwargs - Additional arguments for GenerateResponse.
     ## @return Generated response text, or None if all retries failed.
     def GenerateWithRetry(self, messages: List[Dict[str, str]], 
-                           max_retries: int = 3,
+                           max_retries: int = DEFAULT_MAX_RETRIES,
                            **kwargs) -> Optional[str]:
+        # Retry logic constants
+        LAST_RETRY_OFFSET = 1
+        ATTEMPT_OFFSET = 1
+        
         for attempt in range(max_retries):
             response = self.GenerateResponse(messages, **kwargs)
             if response is not None:
                 return response
             
-            if attempt < max_retries - 1:
-                print(f"Attempt {attempt + 1} failed, retrying...")
-                time.sleep(1 * (attempt + 1))  # Exponential backoff
+            if attempt < max_retries - LAST_RETRY_OFFSET:
+                print(f"Attempt {attempt + ATTEMPT_OFFSET} failed, retrying...")
+                time.sleep(DEFAULT_BACKOFF_MULTIPLIER * (attempt + ATTEMPT_OFFSET))  # Exponential backoff
                 
         return None 

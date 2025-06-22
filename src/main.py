@@ -12,6 +12,12 @@ from BibleParser import BibleParser
 from LlmClient import LLMClient
 from BibleAgents import TopicResearchAgent, CrossReferenceAgent, StudyGuideAgent
 
+# UI Constants
+SEPARATOR_LINE_LENGTH = 60
+SEARCH_RESULTS_SEPARATOR_LENGTH = 40
+DEFAULT_SEARCH_MAX_RESULTS = 10
+DEFAULT_RELATED_COUNT = 0
+
 ## Main application class for the Bible study program.
 class BibleStudyApp:
     ## Initialize the Bible study application.
@@ -77,9 +83,9 @@ class BibleStudyApp:
             print("Application not properly initialized. Exiting.")
             return
         
-        print("\n" + "="*60)
+        print("\n" + "="*SEPARATOR_LINE_LENGTH)
         print("🤖 AGENTIC BIBLE STUDY PROGRAM")
-        print("="*60)
+        print("="*SEPARATOR_LINE_LENGTH)
         print("Available commands:")
         print("1. research <topic> - Research a Bible topic")
         print("2. crossref <reference> - Find cross-references")
@@ -87,7 +93,7 @@ class BibleStudyApp:
         print("4. search <query> - Search for specific verses")
         print("5. help - Show this help")
         print("6. quit - Exit the program")
-        print("="*60)
+        print("="*SEPARATOR_LINE_LENGTH)
         
         while True:
             try:
@@ -108,9 +114,12 @@ class BibleStudyApp:
                     continue
                 
                 # Parse command
-                parts = user_input.split(' ', 1)
-                command = parts[0].lower()
-                args = parts[1] if len(parts) > 1 else ""
+                COMMAND_SPLIT_MAX_SPLITS = 1
+                COMMAND_INDEX = 0
+                ARGS_INDEX = 1
+                parts = user_input.split(' ', COMMAND_SPLIT_MAX_SPLITS)
+                command = parts[COMMAND_INDEX].lower()
+                args = parts[ARGS_INDEX] if len(parts) > ARGS_INDEX else ""
                 
                 if command == 'research':
                     self._HandleResearch(args)
@@ -143,9 +152,9 @@ class BibleStudyApp:
         response = self.Agents['topic_research'].ResearchTopic(args)
         
         if response.success:
-            print("\n" + "="*60)
+            print("\n" + "="*SEPARATOR_LINE_LENGTH)
             print(f"📚 RESEARCH RESULTS: {args.upper()}")
-            print("="*60)
+            print("="*SEPARATOR_LINE_LENGTH)
             print(response.content)
             print(f"\n📊 Used {len(response.verses_used)} verses from {response.metadata.get('translation', 'KJV')}")
         else:
@@ -164,11 +173,11 @@ class BibleStudyApp:
         response = self.Agents['cross_reference'].FindCrossReferences(args)
         
         if response.success:
-            print("\n" + "="*60)
+            print("\n" + "="*SEPARATOR_LINE_LENGTH)
             print(f"🔗 CROSS-REFERENCES: {args.upper()}")
-            print("="*60)
+            print("="*SEPARATOR_LINE_LENGTH)
             print(response.content)
-            print(f"\n📊 Found {response.metadata.get('related_count', 0)} related verses")
+            print(f"\n📊 Found {response.metadata.get('related_count', DEFAULT_RELATED_COUNT)} related verses")
         else:
             print(f"❌ Cross-reference failed: {response.content}")
     
@@ -180,9 +189,13 @@ class BibleStudyApp:
             print("Types: comprehensive, devotional, theological")
             return
         
-        parts = args.split(' ', 1)
-        topic = parts[0]
-        guide_type = parts[1] if len(parts) > 1 else "comprehensive"
+        # Parse guide arguments
+        COMMAND_SPLIT_MAX_SPLITS = 1
+        COMMAND_INDEX = 0
+        ARGS_INDEX = 1
+        parts = args.split(' ', COMMAND_SPLIT_MAX_SPLITS)
+        topic = parts[COMMAND_INDEX]
+        guide_type = parts[ARGS_INDEX] if len(parts) > ARGS_INDEX else "comprehensive"
         
         print(f"\n📖 Creating {guide_type} study guide for: {topic}")
         print("Please wait...")
@@ -190,9 +203,9 @@ class BibleStudyApp:
         response = self.Agents['study_guide'].CreateStudyGuide(topic, guide_type=guide_type)
         
         if response.success:
-            print("\n" + "="*60)
+            print("\n" + "="*SEPARATOR_LINE_LENGTH)
             print(f"📖 STUDY GUIDE: {topic.upper()} ({guide_type.upper()})")
-            print("="*60)
+            print("="*SEPARATOR_LINE_LENGTH)
             print(response.content)
             print(f"\n📊 Based on {len(response.verses_used)} verses")
         else:
@@ -212,12 +225,13 @@ class BibleStudyApp:
         
         print(f"\n🔍 Searching for: {args}")
         
-        verses = self.BibleParser.SearchVerses(args, max_results=10)
+        verses = self.BibleParser.SearchVerses(args, max_results=DEFAULT_SEARCH_MAX_RESULTS)
         
         if verses:
             print(f"\n📖 Found {len(verses)} verses:")
-            print("-" * 40)
-            for i, verse in enumerate(verses, 1):
+            print("-" * SEARCH_RESULTS_SEPARATOR_LENGTH)
+            ENUMERATION_START = 1
+            for i, verse in enumerate(verses, ENUMERATION_START):
                 print(f"{i}. {verse.book} {verse.chapter}:{verse.verse} ({verse.translation})")
                 print(f"   {verse.text}")
                 print()
@@ -226,9 +240,9 @@ class BibleStudyApp:
     
     ## Show help information.
     def _ShowHelp(self) -> None:
-        print("\n" + "="*60)
+        print("\n" + "="*SEPARATOR_LINE_LENGTH)
         print("📖 BIBLE STUDY COMMANDS")
-        print("="*60)
+        print("="*SEPARATOR_LINE_LENGTH)
         print("research <topic>")
         print("  Research a Bible topic and find relevant verses")
         print("  Example: research love")
@@ -247,7 +261,7 @@ class BibleStudyApp:
         print()
         print("help - Show this help")
         print("quit - Exit the program")
-        print("="*60)
+        print("="*SEPARATOR_LINE_LENGTH)
 
 
 ## Main entry point.
