@@ -1,6 +1,5 @@
-"""
-Main application for the Agentic Bible Study Program.
-"""
+## @package main
+## Main application for the Agentic Bible Study Program.
 
 import sys
 import os
@@ -15,18 +14,13 @@ from llm_client import LLMClient
 from bible_agents import TopicResearchAgent, CrossReferenceAgent, StudyGuideAgent
 
 
+## Main application class for the Bible study program.
 class BibleStudyApp:
-    """Main application class for the Bible study program."""
-    
+    ## Initialize the Bible study application.
+    ## @param[in] data_directory - Path to Bible data files.
+    ## @param[in] llm_base_url - Base URL for LM Studio API.
     def __init__(self, data_directory: str = "data", 
                  llm_base_url: str = "http://localhost:1234/v1"):
-        """
-        Initialize the Bible study application.
-        
-        Args:
-            data_directory: Path to Bible data files.
-            llm_base_url: Base URL for LM Studio API.
-        """
         self.data_directory = data_directory
         self.llm_base_url = llm_base_url
         
@@ -37,8 +31,8 @@ class BibleStudyApp:
         
         self._initialize_components()
     
+    ## Initialize all application components.
     def _initialize_components(self) -> None:
-        """Initialize all application components."""
         print("Initializing Bible Study Application...")
         
         # Initialize Bible parser
@@ -71,8 +65,8 @@ class BibleStudyApp:
         
         print("✓ All components initialized successfully")
     
+    ## Run the application in interactive mode.
     def run_interactive(self) -> None:
-        """Run the application in interactive mode."""
         if not self.bible_parser or not self.llm_client:
             print("Application not properly initialized. Exiting.")
             return
@@ -127,8 +121,9 @@ class BibleStudyApp:
             except Exception as e:
                 print(f"Error: {e}")
     
+    ## Handle topic research command.
+    ## @param[in] args - Research topic arguments.
     def _handle_research(self, args: str) -> None:
-        """Handle topic research command."""
         if not args:
             print("Usage: research <topic>")
             return
@@ -147,8 +142,9 @@ class BibleStudyApp:
         else:
             print(f"❌ Research failed: {response.content}")
     
+    ## Handle cross-reference command.
+    ## @param[in] args - Cross-reference arguments.
     def _handle_crossref(self, args: str) -> None:
-        """Handle cross-reference command."""
         if not args:
             print("Usage: crossref <reference> (e.g., crossref John 3:16)")
             return
@@ -167,8 +163,9 @@ class BibleStudyApp:
         else:
             print(f"❌ Cross-reference failed: {response.content}")
     
+    ## Handle study guide command.
+    ## @param[in] args - Study guide arguments.
     def _handle_guide(self, args: str) -> None:
-        """Handle study guide command."""
         if not args:
             print("Usage: guide <topic> [type]")
             print("Types: comprehensive, devotional, theological")
@@ -192,8 +189,9 @@ class BibleStudyApp:
         else:
             print(f"❌ Study guide creation failed: {response.content}")
     
+    ## Handle verse search command.
+    ## @param[in] args - Search query arguments.
     def _handle_search(self, args: str) -> None:
-        """Handle verse search command."""
         if not args:
             print("Usage: search <query>")
             return
@@ -212,8 +210,8 @@ class BibleStudyApp:
         else:
             print("❌ No verses found matching your search.")
     
+    ## Show help information.
     def _show_help(self) -> None:
-        """Show help information."""
         print("\n" + "="*60)
         print("📖 BIBLE STUDY COMMANDS")
         print("="*60)
@@ -238,8 +236,8 @@ class BibleStudyApp:
         print("="*60)
 
 
+## Main entry point.
 def main():
-    """Main entry point."""
     # Check if data directory exists
     data_dir = "data"
     if not Path(data_dir).exists():

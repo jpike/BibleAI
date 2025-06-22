@@ -1,6 +1,5 @@
-"""
-LLM Client for connecting to local LM Studio OpenAI-compatible API.
-"""
+## @package llm_client
+## LLM Client for connecting to local LM Studio OpenAI-compatible API.
 
 import urllib.request
 import urllib.parse
@@ -10,19 +9,14 @@ from typing import Dict, List, Any, Optional
 import time
 
 
+## Client for interacting with local LLM via OpenAI-compatible API.
 class LLMClient:
-    """Client for interacting with local LLM via OpenAI-compatible API."""
-    
+    ## Initialize the LLM client.
+    ## @param[in] base_url - Base URL for the LM Studio API.
+    ## @param[in] api_key - API key (usually not needed for local LM Studio).
+    ## @param[in] timeout - Request timeout in seconds.
     def __init__(self, base_url: str = "http://localhost:1234/v1", 
                  api_key: str = "not-needed", timeout: int = 30):
-        """
-        Initialize the LLM client.
-        
-        Args:
-            base_url: Base URL for the LM Studio API.
-            api_key: API key (usually not needed for local LM Studio).
-            timeout: Request timeout in seconds.
-        """
         self.base_url = base_url.rstrip('/')
         self.api_key = api_key
         self.timeout = timeout
@@ -33,18 +27,12 @@ class LLMClient:
             'Authorization': f'Bearer {api_key}'
         }
     
-    def _make_request(self, url: str, method: str = "GET", data: Optional[Dict] = None) -> Optional[Dict]:
-        """
-        Make an HTTP request using urllib.
-        
-        Args:
-            url: The URL to request.
-            method: HTTP method (GET or POST).
-            data: Data to send with POST request.
-            
-        Returns:
-            Response data as dictionary, or None if failed.
-        """
+    ## Make an HTTP request using urllib.
+    ## @param[in] url - The URL to request.
+    ## @param[in] method - HTTP method (GET or POST).
+    ## @param[in] data - Data to send with POST request.
+    ## @return Response data as dictionary, or None if failed.
+    def _make_request(self, url: str, method: str = "GET", data: Optional[Dict] = None) -> Optional[Dict]:  
         try:
             # Prepare the request
             if data:
@@ -75,14 +63,10 @@ class LLMClient:
         except Exception as e:
             print(f"Request error: {e}")
             return None
-    
+
+    ## Test the connection to the LLM API.
+    ## @return True if connection successful, False otherwise.
     def test_connection(self) -> bool:
-        """
-        Test the connection to the LLM API.
-        
-        Returns:
-            True if connection successful, False otherwise.
-        """
         try:
             response_data = self._make_request(f"{self.base_url}/models")
             return response_data is not None
@@ -90,22 +74,16 @@ class LLMClient:
             print(f"Connection test failed: {e}")
             return False
     
+    ## Generate a response from the LLM.
+    ## @param[in] messages - List of message dictionaries with 'role' and 'content'.
+    ## @param[in] model - Model name to use.
+    ## @param[in] temperature - Sampling temperature (0.0 to 2.0).
+    ## @param[in] max_tokens - Maximum tokens to generate.
+    ## @return Generated response text, or None if failed.
     def generate_response(self, messages: List[Dict[str, str]], 
                          model: str = "local-model",
                          temperature: float = 0.7,
                          max_tokens: int = 1000) -> Optional[str]:
-        """
-        Generate a response from the LLM.
-        
-        Args:
-            messages: List of message dictionaries with 'role' and 'content'.
-            model: Model name to use.
-            temperature: Sampling temperature (0.0 to 2.0).
-            max_tokens: Maximum tokens to generate.
-            
-        Returns:
-            Generated response text, or None if failed.
-        """
         payload = {
             "model": model,
             "messages": messages,
@@ -126,20 +104,14 @@ class LLMClient:
             print(f"Failed to generate response: {response_data}")
             return None
     
+    ## Generate response with retry logic.
+    ## @param[in] messages - List of message dictionaries.
+    ## @param[in] max_retries - Maximum number of retry attempts.
+    ## @param[in] **kwargs - Additional arguments for generate_response.
+    ## @return Generated response text, or None if all retries failed.
     def generate_with_retry(self, messages: List[Dict[str, str]], 
                            max_retries: int = 3,
                            **kwargs) -> Optional[str]:
-        """
-        Generate response with retry logic.
-        
-        Args:
-            messages: List of message dictionaries.
-            max_retries: Maximum number of retry attempts.
-            **kwargs: Additional arguments for generate_response.
-            
-        Returns:
-            Generated response text, or None if all retries failed.
-        """
         for attempt in range(max_retries):
             response = self.generate_response(messages, **kwargs)
             if response is not None:

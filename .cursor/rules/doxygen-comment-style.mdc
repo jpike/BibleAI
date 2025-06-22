@@ -1,0 +1,79 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Doxygen Comment Style Standards
+
+## Overview
+This codebase uses Doxygen comment style with `##` prefix for all documentation. This replaces traditional Python docstrings.
+
+## Comment Format
+
+### Module Documentation
+Use `@package` tag for file-level documentation:
+```python
+##
+## @package module_name
+## Brief description of the module.
+## Additional details if needed.
+##
+```
+
+### Class Documentation
+Place class documentation directly above the class definition:
+```python
+## Brief description of the class.
+class MyClass:
+```
+
+### Function Documentation
+Place function documentation directly above the function definition:
+```python
+## Brief description of the function.
+## @param[in] param_name - Description of input parameter.
+## @param[out] output_param - Description of output parameter.
+## @param[in,out] inout_param - Description of input/output parameter.
+## @return Description of return value.
+def my_function(self, param_name: str) -> str:
+```
+
+## Parameter Annotations
+- Use `[in]` for input parameters
+- Use `[out]` for output parameters  
+- Use `[in,out]` for parameters that are both input and output
+- Separate parameter name and description with ` - ` (space-dash-space)
+
+## Key Rules
+1. **Auto-brief**: Don't use explicit `@brief` tags - the first line is automatically the brief description
+2. **No type info in comments**: Type information belongs in type annotations, not Doxygen comments
+3. **Consistent formatting**: Always use `##` prefix for all documentation lines
+4. **Parameter descriptions**: Use ` - ` between parameter name and description
+5. **Return values**: Use `@return` tag for return value documentation
+
+## Examples
+
+### Before (Python docstring):
+```python
+"""
+Initialize the Bible parser.
+
+Args:
+    data_directory: Path to directory containing OSIS XML files.
+"""
+```
+
+### After (Doxygen style):
+```python
+## Initialize the Bible parser.
+## @param[in] data_directory - Path to directory containing OSIS XML files.
+```
+
+## Files Using This Style
+All Python files in the project follow this standard:
+- [src/main.py](mdc:src/main.py)
+- [src/bible_parser.py](mdc:src/bible_parser.py)
+- [src/llm_client.py](mdc:src/llm_client.py)
+- [src/bible_agents.py](mdc:src/bible_agents.py)
+- [tests/test_parser.py](mdc:tests/test_parser.py)
+

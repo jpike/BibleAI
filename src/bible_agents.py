@@ -1,49 +1,39 @@
-"""
-Bible Study Agents for different types of analysis and tasks.
-"""
+## @package bible_agents
+## Bible Study Agents for different types of analysis and tasks.
 
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from bible_parser import BibleVerse, BibleParser
 from llm_client import LLMClient
 
-
+## Response from a Bible study agent.
 @dataclass
 class AgentResponse:
-    """Response from a Bible study agent."""
     success: bool
     content: str
     verses_used: List[BibleVerse]
     metadata: Dict[str, Any]
 
 
+## Agent for researching Bible topics and finding relevant verses.
 class TopicResearchAgent:
-    """Agent for researching Bible topics and finding relevant verses."""
-    
+    ## Initialize the topic research agent.
+    ## @param[in] bible_parser - Initialized Bible parser instance.
+    ## @param[in] llm_client - Initialized LLM client instance.
     def __init__(self, bible_parser: BibleParser, llm_client: LLMClient):
-        """
-        Initialize the topic research agent.
-        
-        Args:
-            bible_parser: Initialized Bible parser instance.
-            llm_client: Initialized LLM client instance.
-        """
+        ## Initialize the topic research agent.
+        ## @param[in] bible_parser - Initialized Bible parser instance.
+        ## @param[in] llm_client - Initialized LLM client instance.
         self.bible_parser = bible_parser
         self.llm_client = llm_client
         
+    ## Research a Bible topic and find relevant verses.
+    ## @param[in] topic - The topic to research.
+    ## @param[in] translation - Bible translation to use.
+    ## @param[in] max_verses - Maximum number of verses to include.
+    ## @return AgentResponse with research results.
     def research_topic(self, topic: str, translation: str = "KJV", 
                       max_verses: int = 20) -> AgentResponse:
-        """
-        Research a Bible topic and find relevant verses.
-        
-        Args:
-            topic: The topic to research.
-            translation: Bible translation to use.
-            max_verses: Maximum number of verses to include.
-            
-        Returns:
-            AgentResponse with research results.
-        """
         # Generate keywords for the topic
         keyword_prompt = f"""
         Given the topic "{topic}", generate 5-10 relevant keywords that would help find Bible verses about this topic.
@@ -117,39 +107,30 @@ class TopicResearchAgent:
             }
         )
     
+    ## Format verses for LLM analysis.
+    ## @param[in] verses - List of Bible verses to format.
+    ## @return Formatted string of verses.
     def _format_verses_for_analysis(self, verses: List[BibleVerse]) -> str:
-        """Format verses for LLM analysis."""
         formatted = []
         for verse in verses:
             formatted.append(f"{verse.book} {verse.chapter}:{verse.verse} ({verse.translation}) - {verse.text}")
         return "\n".join(formatted)
 
 
+## Agent for finding cross-references and related passages.
 class CrossReferenceAgent:
-    """Agent for finding cross-references and related passages."""
-    
+    ## Initialize the cross-reference agent.
+    ## @param[in] bible_parser - Initialized Bible parser instance.
+    ## @param[in] llm_client - Initialized LLM client instance.
     def __init__(self, bible_parser: BibleParser, llm_client: LLMClient):
-        """
-        Initialize the cross-reference agent.
-        
-        Args:
-            bible_parser: Initialized Bible parser instance.
-            llm_client: Initialized LLM client instance.
-        """
         self.bible_parser = bible_parser
         self.llm_client = llm_client
     
+    ## Find cross-references for a given Bible reference.
+    ## @param[in] reference - Bible reference (e.g., "John 3:16").
+    ## @param[in] translation - Bible translation to use.
+    ## @return AgentResponse with cross-reference analysis.
     def find_cross_references(self, reference: str, translation: str = "KJV") -> AgentResponse:
-        """
-        Find cross-references for a given Bible reference.
-        
-        Args:
-            reference: Bible reference (e.g., "John 3:16").
-            translation: Bible translation to use.
-            
-        Returns:
-            AgentResponse with cross-reference analysis.
-        """
         # Parse the reference
         parsed_ref = self._parse_reference(reference)
         if not parsed_ref:
@@ -216,8 +197,10 @@ class CrossReferenceAgent:
             }
         )
     
+    ## Parse a Bible reference string.
+    ## @param[in] reference - Bible reference string to parse.
+    ## @return Tuple of (book, chapter, verse) if successful, None otherwise.
     def _parse_reference(self, reference: str) -> Optional[tuple]:
-        """Parse a Bible reference string."""
         import re
         
         # Pattern for "Book Chapter:Verse" format
@@ -232,9 +215,13 @@ class CrossReferenceAgent:
         
         return None
     
+    ## Find verses related to the target verse.
+    ## @param[in] target_verse - The target verse to find related verses for.
+    ## @param[in] translation - Bible translation to use.
+    ## @param[in] max_related - Maximum number of related verses to find.
+    ## @return List of related Bible verses.
     def _find_related_verses(self, target_verse: BibleVerse, translation: str, 
                            max_related: int = 15) -> List[BibleVerse]:
-        """Find verses related to the target verse."""
         # Extract key terms from the target verse
         key_terms = self._extract_key_terms(target_verse.text)
         
@@ -252,8 +239,10 @@ class CrossReferenceAgent:
         
         return related_verses[:max_related]
     
+    ## Extract key terms from verse text for cross-reference search.
+    ## @param[in] text - Verse text to extract terms from.
+    ## @return List of key terms.
     def _extract_key_terms(self, text: str) -> List[str]:
-        """Extract key terms from verse text for cross-reference search."""
         # Simple approach: extract words longer than 4 characters
         words = text.split()
         key_terms = [word.lower() for word in words if len(word) > 4]
@@ -264,41 +253,32 @@ class CrossReferenceAgent:
         
         return key_terms[:5]  # Return top 5 terms
     
+    ## Format verses for LLM analysis.
+    ## @param[in] verses - List of Bible verses to format.
+    ## @return Formatted string of verses.
     def _format_verses_for_analysis(self, verses: List[BibleVerse]) -> str:
-        """Format verses for LLM analysis."""
         formatted = []
         for verse in verses:
             formatted.append(f"{verse.book} {verse.chapter}:{verse.verse} - {verse.text}")
         return "\n".join(formatted)
 
 
+## Agent for creating comprehensive Bible study guides.
 class StudyGuideAgent:
-    """Agent for creating comprehensive Bible study guides."""
-    
+    ## Initialize the study guide agent.
+    ## @param[in] bible_parser - Initialized Bible parser instance.
+    ## @param[in] llm_client - Initialized LLM client instance.
     def __init__(self, bible_parser: BibleParser, llm_client: LLMClient):
-        """
-        Initialize the study guide agent.
-        
-        Args:
-            bible_parser: Initialized Bible parser instance.
-            llm_client: Initialized LLM client instance.
-        """
         self.bible_parser = bible_parser
         self.llm_client = llm_client
     
+    ## Create a comprehensive Bible study guide.
+    ## @param[in] topic - The topic for the study guide.
+    ## @param[in] translation - Bible translation to use.
+    ## @param[in] guide_type - Type of guide ("comprehensive", "devotional", "theological").
+    ## @return AgentResponse with the study guide.
     def create_study_guide(self, topic: str, translation: str = "KJV", 
                           guide_type: str = "comprehensive") -> AgentResponse:
-        """
-        Create a comprehensive Bible study guide.
-        
-        Args:
-            topic: The topic for the study guide.
-            translation: Bible translation to use.
-            guide_type: Type of guide ("comprehensive", "devotional", "theological").
-            
-        Returns:
-            AgentResponse with the study guide.
-        """
         # First, research the topic to get relevant verses
         topic_agent = TopicResearchAgent(self.bible_parser, self.llm_client)
         topic_research = topic_agent.research_topic(topic, translation, max_verses=30)
@@ -316,8 +296,11 @@ class StudyGuideAgent:
         else:
             return self._create_comprehensive_guide(topic, topic_research.verses_used)
     
+    ## Create a comprehensive study guide.
+    ## @param[in] topic - The topic for the study guide.
+    ## @param[in] verses - List of Bible verses to use.
+    ## @return AgentResponse with the comprehensive guide.
     def _create_comprehensive_guide(self, topic: str, verses: List[BibleVerse]) -> AgentResponse:
-        """Create a comprehensive study guide."""
         guide_prompt = f"""
         Create a comprehensive Bible study guide on "{topic}" using these verses:
         
@@ -357,8 +340,11 @@ class StudyGuideAgent:
             }
         )
     
+    ## Create a devotional study guide.
+    ## @param[in] topic - The topic for the study guide.
+    ## @param[in] verses - List of Bible verses to use.
+    ## @return AgentResponse with the devotional guide.
     def _create_devotional_guide(self, topic: str, verses: List[BibleVerse]) -> AgentResponse:
-        """Create a devotional study guide."""
         guide_prompt = f"""
         Create a devotional Bible study guide on "{topic}" using these verses:
         
@@ -396,8 +382,11 @@ class StudyGuideAgent:
             }
         )
     
+    ## Create a theological study guide.
+    ## @param[in] topic - The topic for the study guide.
+    ## @param[in] verses - List of Bible verses to use.
+    ## @return AgentResponse with the theological guide.
     def _create_theological_guide(self, topic: str, verses: List[BibleVerse]) -> AgentResponse:
-        """Create a theological study guide."""
         guide_prompt = f"""
         Create a theological Bible study guide on "{topic}" using these verses:
         
@@ -437,8 +426,10 @@ class StudyGuideAgent:
             }
         )
     
+    ## Format verses for LLM analysis.
+    ## @param[in] verses - List of Bible verses to format.
+    ## @return Formatted string of verses.
     def _format_verses_for_analysis(self, verses: List[BibleVerse]) -> str:
-        """Format verses for LLM analysis."""
         formatted = []
         for verse in verses:
             formatted.append(f"{verse.book} {verse.chapter}:{verse.verse} - {verse.text}")

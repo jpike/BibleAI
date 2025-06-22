@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""
-Test script for the Bible parser fix.
-"""
+## @package test_parser
+## Test script for the Bible parser fix.
 
 import sys
 import os
@@ -9,8 +8,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.bible_parser import BibleParser
 
+## Test the Bible parser with the namespace fix.
 def test_parser():
-    """Test the Bible parser with the namespace fix."""
     try:
         parser = BibleParser()
         result = parser.parse_translation('kjv.xml')

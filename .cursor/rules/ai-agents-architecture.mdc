@@ -1,0 +1,120 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# AI Agents Architecture
+
+## Overview
+The Bible AI system uses a multi-agent architecture where specialized AI agents work together to provide comprehensive Bible study capabilities.
+
+## Agent System Design
+
+### Core Components
+- **Bible Parser**: [src/bible_parser.py](mdc:src/bible_parser.py) provides data access and search functionality
+- **LLM Client**: [src/llm_client.py](mdc:src/llm_client.py) handles AI model communication
+- **AI Agents**: [src/bible_agents.py](mdc:src/bible_agents.py) contains specialized agents for different tasks
+
+### Agent Response Standardization
+All agents use the `AgentResponse` dataclass for consistent output:
+```python
+@dataclass
+class AgentResponse:
+    success: bool          # Whether the operation succeeded
+    content: str          # The main response content
+    verses_used: List[BibleVerse]  # Verses referenced in the response
+    metadata: Dict[str, Any]  # Additional metadata about the operation
+```
+
+## Specialized Agents
+
+### TopicResearchAgent
+**Purpose**: Research Bible topics and find relevant verses.
+
+**Workflow**:
+1. Generate relevant keywords using LLM
+2. Search Bible for verses containing those keywords
+3. Analyze and organize the verses using LLM
+4. Return structured research results
+
+**Key Methods**:
+- `ResearchTopic(topic, translation, max_verses)` - Main research function
+- `_FormatVersesForAnalysis(verses)` - Helper for LLM analysis
+
+### CrossReferenceAgent
+**Purpose**: Find cross-references and related passages for specific verses.
+
+**Workflow**:
+1. Parse Bible reference (e.g., "John 3:16")
+2. Extract key terms from the target verse
+3. Search for verses with similar terms
+4. Analyze connections and relationships using LLM
+5. Return cross-reference analysis
+
+**Key Methods**:
+- `FindCrossReferences(reference, translation)` - Main cross-reference function
+- `_ParseReference(reference)` - Parse Bible reference strings
+- `_FindRelatedVerses(target_verse, translation)` - Find related verses
+- `_ExtractKeyTerms(text)` - Extract meaningful terms for search
+
+### StudyGuideAgent
+**Purpose**: Create comprehensive Bible study guides in different formats.
+
+**Workflow**:
+1. Use TopicResearchAgent to gather relevant verses
+2. Create study guide based on specified type:
+   - **Comprehensive**: Full study with context, themes, and applications
+   - **Devotional**: 7-day devotional format with reflection questions
+   - **Theological**: Academic focus on doctrinal analysis
+3. Return structured study guide
+
+**Key Methods**:
+- `CreateStudyGuide(topic, translation, guide_type)` - Main guide creation
+- `_CreateComprehensiveGuide(topic, verses)` - Comprehensive format
+- `_CreateDevotionalGuide(topic, verses)` - Devotional format
+- `_CreateTheologicalGuide(topic, verses)` - Theological format
+
+## Agent Integration
+
+### Main Application Integration
+The main application [src/main.py](mdc:src/main.py) initializes all agents and provides a unified interface:
+
+```python
+self.agents = {
+    'topic_research': TopicResearchAgent(self.bible_parser, self.llm_client),
+    'cross_reference': CrossReferenceAgent(self.bible_parser, self.llm_client),
+    'study_guide': StudyGuideAgent(self.bible_parser, self.llm_client)
+}
+```
+
+### Command Interface
+- `research <topic>` - Uses TopicResearchAgent
+- `crossref <reference>` - Uses CrossReferenceAgent
+- `guide <topic> [type]` - Uses StudyGuideAgent
+
+## LLM Integration Pattern
+
+### Standard LLM Workflow
+1. **Keyword Generation**: Use LLM to generate relevant search terms
+2. **Data Retrieval**: Use Bible parser to find relevant verses
+3. **Analysis**: Use LLM to analyze and structure the results
+4. **Response Formatting**: Return structured response with metadata
+
+### LLM Prompt Engineering
+- Prompts are designed to be specific and structured
+- Include context about the task and expected output format
+- Use verse formatting helpers for consistent LLM input
+
+## Error Handling
+- All agents return `AgentResponse` with success/failure status
+- Failed operations include error messages in the content field
+- Metadata preserves context even when operations fail
+- Graceful degradation when LLM or data access fails
+
+## Extensibility
+The agent architecture is designed for easy extension:
+- New agents can be added by implementing the same interface
+- Agents can be composed (StudyGuideAgent uses TopicResearchAgent)
+- Common utilities like verse formatting are shared
+- Standardized response format enables agent chaining
+

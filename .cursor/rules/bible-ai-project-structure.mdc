@@ -1,0 +1,51 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Bible AI Project Structure Guide
+
+## Overview
+This is an Agentic Bible Study Program that uses AI agents to help with Bible research, cross-references, and study guide creation.
+
+## Main Entry Point
+The main application is [src/main.py](mdc:src/main.py), which provides an interactive command-line interface for Bible study tasks.
+
+## Core Components
+
+### Bible Data Parser
+[src/bible_parser.py](mdc:src/bible_parser.py) handles parsing OSIS XML Bible files and provides search functionality:
+- `BibleVerse` dataclass for individual verse representation
+- `BibleParser` class for loading and searching Bible translations
+- Supports multiple translations (KJV, WEB, YLT) from XML files in the [data/](mdc:data) directory
+
+### LLM Client
+[src/llm_client.py](mdc:src/llm_client.py) provides communication with local LM Studio API:
+- `LLMClient` class for OpenAI-compatible API interactions
+- Supports retry logic and connection testing
+- Used by all AI agents for generating responses
+
+### Bible Study Agents
+[src/bible_agents.py](mdc:src/bible_agents.py) contains specialized AI agents:
+- `TopicResearchAgent` - Researches Bible topics and finds relevant verses
+- `CrossReferenceAgent` - Finds cross-references and related passages
+- `StudyGuideAgent` - Creates comprehensive, devotional, or theological study guides
+- `AgentResponse` dataclass for standardized agent responses
+
+## Testing
+[tests/test_parser.py](mdc:tests/test_parser.py) contains tests for the Bible parser functionality.
+
+## Data Files
+The [data/](mdc:data) directory contains OSIS XML Bible translation files:
+- `kjv.xml` - King James Version
+- `web.xml` - World English Bible
+- `ylt.xml` - Young's Literal Translation
+
+## Usage
+Run the application with: `python src/main.py`
+Available commands:
+- `research <topic>` - Research a Bible topic
+- `crossref <reference>` - Find cross-references
+- `guide <topic> [type]` - Create study guide
+- `search <query>` - Search for specific verses
+
