@@ -1,0 +1,113 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Path Naming Convention
+
+## Overview
+This project follows a specific naming convention for variables that contain file or directory paths to avoid confusion with actual filesystem objects.
+
+## The Problem
+In Python, there's a distinction between:
+- **Paths**: Simple string or `pathlib.Path` representations of file/directory locations (e.g., `"data/kjv.xml"`)
+- **Filesystem objects**: High-level objects for folder/directory/file objects with methods and properties
+
+Without clear naming, it's easy to confuse these concepts, leading to code that's harder to understand and maintain.
+
+## Naming Convention
+
+### Variables Containing Path Strings
+All variables that contain path strings (not filesystem objects) should use the `_path` suffix:
+
+```python
+# ✅ Correct - clearly indicates a path string
+data_directory_path = "data"
+config_file_path = "config/settings.json"
+output_directory_path = "output"
+
+# ❌ Incorrect - ambiguous naming
+data_directory = "data"
+config_file = "config/settings.json"
+output_directory = "output"
+```
+
+### Member Variables
+Follow the same convention for class member variables:
+
+```python
+class BibleParser:
+    def __init__(self, data_directory_path: str = "data"):
+        # ✅ Correct - clearly indicates a path string
+        self.DataDirectoryPath: str = data_directory_path
+        
+        # ❌ Incorrect - ambiguous naming
+        self.DataDirectory: str = data_directory_path
+```
+
+### Function Parameters
+Use the `_path` suffix for parameters that accept path strings:
+
+```python
+# ✅ Correct
+def __init__(self, data_directory_path: str = "data"):
+    pass
+
+def load_file(file_path: str):
+    pass
+
+# ❌ Incorrect
+def __init__(self, data_directory: str = "data"):
+    pass
+
+def load_file(file: str):
+    pass
+```
+
+## Examples from the Codebase
+
+### BibleParser Class
+The [BibleParser.py](mdc:src/BibleParser.py) class demonstrates this convention:
+
+```python
+def __init__(self, data_directory_path: str = "data"):
+    self.DataDirectoryPath: Path = Path(data_directory_path)
+```
+
+### Main Application
+The [Main.py](mdc:src/Main.py) file shows the convention in action:
+
+```python
+def __init__(self, data_directory_path: str = "data"):
+    self.DataDirectoryPath: str = data_directory_path
+
+def main():
+    data_directory_path = "data"
+    app = BibleStudyApp(data_directory_path)
+```
+
+## Benefits
+
+1. **Clarity**: Variables clearly indicate they contain path strings
+2. **Consistency**: Uniform naming across the entire codebase
+3. **Prevention of confusion**: Eliminates ambiguity between strings and objects
+4. **Self-documenting**: Code is more readable and maintainable
+5. **Type safety**: Makes it clear when you're working with strings vs. objects
+
+## When to Use This Convention
+
+- ✅ Use `_path` suffix for string variables containing file/directory paths
+- ✅ Use `_path` suffix for function parameters accepting path strings
+- ✅ Use `_path` suffix for member variables storing path strings
+- ❌ Don't use `_path` suffix for actual filesystem objects (Directory, etc.)
+- ❌ Don't use `_path` suffix for variables that don't contain paths
+
+## Migration Guidelines
+
+When updating existing code:
+1. Rename variables containing path strings to include `_path` suffix
+2. Update all references to the renamed variables
+3. Update function parameters and documentation
+4. Ensure consistency across related files
+5. Test to verify functionality is preserved
+

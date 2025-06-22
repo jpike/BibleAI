@@ -15,14 +15,14 @@ from BibleAgents import TopicResearchAgent, CrossReferenceAgent, StudyGuideAgent
 ## Main application class for the Bible study program.
 class BibleStudyApp:
     ## Initialize the Bible study application.
-    ## @param[in] data_directory - Path to Bible data files.
+    ## @param[in] data_directory_path - Path to Bible data files.
     ## @param[in] llm_base_url - Base URL for LM Studio API.
     def __init__(
             self, 
-            data_directory: str = "data", 
+            data_directory_path: str = "data", 
             llm_base_url: str = "http://localhost:1234/v1"):
         ## Path to the directory containing Bible data files.
-        self.DataDirectory: str = data_directory
+        self.DataDirectoryPath: str = data_directory_path
         ## Base URL for the LM Studio API.
         self.LlmBaseUrl: str = llm_base_url
         
@@ -41,7 +41,7 @@ class BibleStudyApp:
         
         # Initialize Bible parser
         try:
-            self.BibleParser = BibleParser(self.DataDirectory)
+            self.BibleParser = BibleParser(self.DataDirectoryPath)
             self.BibleParser.load_all_translations()
             print("✓ Bible data loaded successfully")
         except Exception as e:
@@ -247,14 +247,14 @@ class BibleStudyApp:
 ## Main entry point.
 def main():
     # Check if data directory exists
-    data_dir = "data"
-    if not Path(data_dir).exists():
-        print(f"Error: Data directory '{data_dir}' not found.")
+    data_directory_path = "data"
+    if not Path(data_directory_path).exists():
+        print(f"Error: Data directory '{data_directory_path}' not found.")
         print("Make sure you have Bible XML files in the data directory.")
         return
     
     # Create and run the application
-    app = BibleStudyApp(data_dir)
+    app = BibleStudyApp(data_directory_path)
     app.run_interactive()
 
 if __name__ == "__main__":

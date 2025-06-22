@@ -29,10 +29,10 @@ class BibleVerse:
 ## Parser for OSIS XML Bible data files.
 class BibleParser:
     ## Initialize the Bible parser.
-    ## @param[in] data_directory - Path to directory containing OSIS XML files.
-    def __init__(self, data_directory: str = "data"):
+    ## @param[in] data_directory_path - Path to directory containing OSIS XML files.
+    def __init__(self, data_directory_path: str = "data"):
         ## Path to the directory containing OSIS XML files.
-        self.DataDirectory: Path = Path(data_directory)
+        self.DataDirectoryPath: Path = Path(data_directory_path)
         ## Dictionary storing parsed Bible data organized by translation.
         self.Translations: dict[str, dict[str, list["BibleVerse"]]] = {}
         ## Index for fast verse lookup by translation and OSIS ID.
@@ -42,7 +42,7 @@ class BibleParser:
     ## @param[in] translation_name - Name of the translation file (e.g., 'kjv.xml').
     ## @return Dictionary mapping book names to lists of verses.
     def parse_translation(self, translation_name: str) -> Dict[str, List[BibleVerse]]:
-        file_path = self.DataDirectory / translation_name
+        file_path = self.DataDirectoryPath / translation_name
         if not file_path.exists():
             raise FileNotFoundError(f"Translation file not found: {file_path}")
             
@@ -108,10 +108,10 @@ class BibleParser:
     
     ## Load all available Bible translations from the data directory.
     def load_all_translations(self) -> None:
-        xml_files = list(self.DataDirectory.glob("*.xml"))
+        xml_files = list(self.DataDirectoryPath.glob("*.xml"))
         
         if not xml_files:
-            raise FileNotFoundError(f"No XML files found in {self.DataDirectory}")
+            raise FileNotFoundError(f"No XML files found in {self.DataDirectoryPath}")
             
         for xml_file in xml_files:
             translation_name = xml_file.name
