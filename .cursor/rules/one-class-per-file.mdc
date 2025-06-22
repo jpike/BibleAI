@@ -1,0 +1,65 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# One Class Per File Rule
+
+## Overview
+This project follows the principle of having **at most one class per file** to improve code organization, maintainability, and navigation.
+
+## Rule Details
+- Each Python file should contain **at most one class**
+- The filename should match the class name with `.py` extension
+- Package names should use `PascalCase` or `UpperCamelCase`
+- Related classes can be grouped in subpackages
+
+## Examples from This Codebase
+
+### Good Examples (One Class Per File)
+- [BibleVerse.py](mdc:src/BibleVerse.py) - Contains only the `BibleVerse` dataclass
+- [BibleParser.py](mdc:src/BibleParser.py) - Contains only the `BibleParser` class
+- [LlmClient.py](mdc:src/LlmClient.py) - Contains only the `LLMClient` class
+- [Main.py](mdc:src/Main.py) - Contains only the `BibleStudyApp` class
+
+### Agent Classes (Organized in Subpackage)
+The agent classes were split from the original [BibleAgents.py](mdc:src/BibleAgents.py) into separate files:
+- [Agents/AgentResponse.py](mdc:src/Agents/AgentResponse.py) - `AgentResponse` dataclass
+- [Agents/TopicResearchAgent.py](mdc:src/Agents/TopicResearchAgent.py) - `TopicResearchAgent` class
+- [Agents/CrossReferenceAgent.py](mdc:src/Agents/CrossReferenceAgent.py) - `CrossReferenceAgent` class
+- [Agents/StudyGuideAgent.py](mdc:src/Agents/StudyGuideAgent.py) - `StudyGuideAgent` class
+
+## Benefits
+1. **Easier Navigation**: Find classes quickly by filename
+2. **Better Organization**: Clear separation of concerns
+3. **Improved Maintainability**: Changes to one class don't affect others
+4. **Reduced Merge Conflicts**: Smaller, focused files
+5. **Better Code Reviews**: Easier to review focused functionality
+
+## When to Split Files
+If a file contains multiple classes, consider:
+1. **Splitting into separate files** if classes are independent
+2. **Creating a subpackage** if classes are related but serve different purposes
+3. **Using composition** instead of multiple classes in one file
+
+## Package Structure
+Use subpackages for related functionality:
+```
+src/
+├── Agents/           # Subpackage for AI agents
+│   ├── __init__.py   # Package initialization
+│   ├── AgentResponse.py
+│   ├── TopicResearchAgent.py
+│   ├── CrossReferenceAgent.py
+│   └── StudyGuideAgent.py
+├── BibleVerse.py     # Single class file
+├── BibleParser.py    # Single class file
+├── LlmClient.py      # Single class file
+└── Main.py          # Single class file
+```
+
+## Import Guidelines
+- Import specific classes from their dedicated files
+- Use package imports for related functionality: `from Agents import TopicResearchAgent`
+- Keep imports clean and explicit
+

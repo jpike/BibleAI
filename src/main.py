@@ -10,7 +10,7 @@ sys.path.append(str(pathlib.Path(__file__).parent))
 
 from BibleParser import BibleParser
 from LlmClient import LLMClient
-from BibleAgents import TopicResearchAgent, CrossReferenceAgent, StudyGuideAgent
+from Agents import TopicResearchAgent, CrossReferenceAgent, StudyGuideAgent
 
 # UI Constants
 SEPARATOR_LINE_LENGTH = 60
@@ -207,7 +207,7 @@ class BibleStudyApp:
             print(f"📖 STUDY GUIDE: {topic.upper()} ({guide_type.upper()})")
             print("="*SEPARATOR_LINE_LENGTH)
             print(response.content)
-            print(f"\n📊 Based on {len(response.verses_used)} verses")
+            print(f"\n📊 Used {len(response.verses_used)} verses")
         else:
             print(f"❌ Study guide creation failed: {response.content}")
     
@@ -218,20 +218,16 @@ class BibleStudyApp:
             print("Usage: search <query>")
             return
         
-        bible_parser_available = self.BibleParser is not None
-        if not bible_parser_available:
-            print("❌ Bible parser not initialized.")
-            return
-        
         print(f"\n🔍 Searching for: {args}")
+        print("Please wait...")
         
-        verses = self.BibleParser.SearchVerses(args, max_results=DEFAULT_SEARCH_MAX_RESULTS)
+        results = self.BibleParser.SearchVerses(args, max_results=DEFAULT_SEARCH_MAX_RESULTS)
         
-        if verses:
-            print(f"\n📖 Found {len(verses)} verses:")
+        if results:
+            print(f"\n📖 SEARCH RESULTS ({len(results)} found):")
             print("-" * SEARCH_RESULTS_SEPARATOR_LENGTH)
-            ENUMERATION_START = 1
-            for i, verse in enumerate(verses, ENUMERATION_START):
+            
+            for i, verse in enumerate(results, 1):
                 print(f"{i}. {verse.book} {verse.chapter}:{verse.verse} ({verse.translation})")
                 print(f"   {verse.text}")
                 print()
@@ -243,39 +239,30 @@ class BibleStudyApp:
         print("\n" + "="*SEPARATOR_LINE_LENGTH)
         print("📖 BIBLE STUDY COMMANDS")
         print("="*SEPARATOR_LINE_LENGTH)
-        print("research <topic>")
-        print("  Research a Bible topic and find relevant verses")
-        print("  Example: research love")
-        print()
-        print("crossref <reference>")
-        print("  Find cross-references for a specific verse")
-        print("  Example: crossref John 3:16")
-        print()
-        print("guide <topic> [type]")
-        print("  Create a study guide (comprehensive, devotional, theological)")
-        print("  Example: guide forgiveness devotional")
-        print()
-        print("search <query>")
-        print("  Search for specific words or phrases in the Bible")
-        print("  Example: search grace")
-        print()
-        print("help - Show this help")
-        print("quit - Exit the program")
+        print("research <topic>     - Research a Bible topic and find relevant verses")
+        print("crossref <reference> - Find cross-references for a specific verse")
+        print("guide <topic> [type] - Create a study guide (comprehensive/devotional/theological)")
+        print("search <query>       - Search for specific text in Bible verses")
+        print("help                 - Show this help information")
+        print("quit                 - Exit the program")
+        print("="*SEPARATOR_LINE_LENGTH)
+        print("\nExamples:")
+        print("  research love")
+        print("  crossref John 3:16")
+        print("  guide faith devotional")
+        print("  search 'kingdom of heaven'")
         print("="*SEPARATOR_LINE_LENGTH)
 
-
-## Main entry point.
+## Main function to run the Bible study application.
 def Main():
     # Check if data directory exists
-    data_directory_path = "data"
-    data_directory_exists = pathlib.Path(data_directory_path).exists()
-    if not data_directory_exists:
-        print(f"Error: Data directory '{data_directory_path}' not found.")
-        print("Make sure you have Bible XML files in the data directory.")
+    data_dir = pathlib.Path("data")
+    if not data_dir.exists():
+        print("Error: 'data' directory not found. Please ensure Bible data files are available.")
         return
     
     # Create and run the application
-    app = BibleStudyApp(data_directory_path)
+    app = BibleStudyApp()
     app.RunInteractive()
 
 if __name__ == "__main__":

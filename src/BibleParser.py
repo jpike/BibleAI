@@ -2,31 +2,15 @@
 ## Bible Data Parser for OSIS XML format.
 ## Handles parsing and indexing Bible verses from multiple translations.
 
-import dataclasses
 import pathlib
 import re
 from typing import Optional
 import xml.etree.ElementTree as ET
 
+from BibleVerse import BibleVerse
+
 # Search Constants
 DEFAULT_SEARCH_MAX_RESULTS = 50
-
-## Represents a single Bible verse with metadata.
-@dataclasses.dataclass
-class BibleVerse:
-    translation: str
-    book: str
-    chapter: int
-    verse: int
-    text: str
-    osis_id: str
-    
-    ## Validate and clean the verse data.
-    def __post_init__(self):
-        self.text = self.text.strip()
-        # Remove extra whitespace and normalize
-        self.text = re.sub(r'\s+', ' ', self.text)
-
 
 ## Parser for OSIS XML Bible data files.
 class BibleParser:
