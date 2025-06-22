@@ -1,5 +1,5 @@
 ---
-description: 
+description: When dealing with variables related to paths or filesystem stuff
 globs: 
 alwaysApply: false
 ---

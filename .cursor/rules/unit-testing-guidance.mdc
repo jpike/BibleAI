@@ -1,0 +1,55 @@
+---
+description: Helpful when generating unit tests.
+globs: 
+alwaysApply: false
+---
+# Unit Testing Guidance for BibleAI
+
+## Test Organization
+- Place all unit tests in the `tests/` directory, mirroring the structure of the `src/` directory.
+- For each production code file, create a corresponding test file (e.g., `BibleVerse.py` → `BibleVerseTests.py`).
+- For subpackages (e.g., `src/Agents/`), place tests in `tests/Agents/`.
+- Each test file should contain tests for only one production file/class.
+
+## Test Naming Conventions
+- Test method names must start with `test_` and use PascalCase/UpperCamelCase for the rest of the name (e.g., `test_BasicInitialization`).
+- Test class names should be descriptive and end with `Tests` (e.g., `BibleVerseTests`).
+
+## Test Coverage Expectations
+- Add comprehensive unit tests for all new features and code changes.
+- Tests should cover:
+  - Normal ("happy path") behavior
+  - Edge cases and error handling
+  - Input validation and output correctness
+  - Integration with other components (using mocks as needed)
+- All public methods and major code paths should be tested.
+
+## Test Dependencies
+- Use only Python standard library modules for testing (e.g., `unittest`, `unittest.mock`, `tempfile`, `shutil`, `pathlib`).
+- Do **not** add third-party dependencies for testing.
+
+## Test Execution
+- Tests should be runnable via a test runner script (e.g., `tests/run_tests.py`) or by running individual test files directly.
+- Tests should be isolated and not depend on external services or files (use mocks and temporary files as needed).
+
+## Test File Structure Example
+```
+tests/
+├── BibleVerseTests.py
+├── BibleParserTests.py
+├── LlmClientTests.py
+├── MainTests.py
+└── Agents/
+    ├── AgentResponseTests.py
+    ├── TopicResearchAgentTests.py
+    ├── CrossReferenceAgentTests.py
+    └── StudyGuideAgentTests.py
+```
+
+## Additional Guidance
+- When adding new features, always add or update unit tests to protect against regressions.
+- Use `unittest.mock` to isolate units and avoid real network or file system dependencies.
+- Use `setUp()` and `tearDown()` for test isolation and cleanup.
+- Document test cases clearly and use descriptive names for test methods.
+- Ensure all tests pass before merging or releasing code.
+
