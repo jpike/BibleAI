@@ -31,15 +31,18 @@ class BibleParser:
     ## Initialize the Bible parser.
     ## @param[in] data_directory - Path to directory containing OSIS XML files.
     def __init__(self, data_directory: str = "data"):
-        self.data_directory = Path(data_directory)
-        self.translations = {}  # Store parsed data by translation
-        self.verse_index = {}   # Index for fast verse lookup
+        ## Path to the directory containing OSIS XML files.
+        self.DataDirectory: Path = Path(data_directory)
+        ## Dictionary storing parsed Bible data organized by translation.
+        self.Translations: dict[str, dict[str, list["BibleVerse"]]] = {}
+        ## Index for fast verse lookup by translation and OSIS ID.
+        self.VerseIndex: dict[str, "BibleVerse"] = {}
         
     ## Parse a single Bible translation file.
     ## @param[in] translation_name - Name of the translation file (e.g., 'kjv.xml').
     ## @return Dictionary mapping book names to lists of verses.
     def parse_translation(self, translation_name: str) -> Dict[str, List[BibleVerse]]:
-        file_path = self.data_directory / translation_name
+        file_path = self.DataDirectory / translation_name
         if not file_path.exists():
             raise FileNotFoundError(f"Translation file not found: {file_path}")
             
@@ -96,7 +99,7 @@ class BibleParser:
             
             # Add to global index
             index_key = f"{translation_code}:{osis_id}"
-            self.verse_index[index_key] = bible_verse
+            self.VerseIndex[index_key] = bible_verse
             
             verse_count += 1
             
@@ -105,20 +108,20 @@ class BibleParser:
     
     ## Load all available Bible translations from the data directory.
     def load_all_translations(self) -> None:
-        xml_files = list(self.data_directory.glob("*.xml"))
+        xml_files = list(self.DataDirectory.glob("*.xml"))
         
         if not xml_files:
-            raise FileNotFoundError(f"No XML files found in {self.data_directory}")
+            raise FileNotFoundError(f"No XML files found in {self.DataDirectory}")
             
         for xml_file in xml_files:
             translation_name = xml_file.name
             try:
                 verses_by_book = self.parse_translation(translation_name)
-                self.translations[translation_name] = verses_by_book
+                self.Translations[translation_name] = verses_by_book
             except Exception as e:
                 print(f"Error parsing {translation_name}: {e}")
                 
-        print(f"Successfully loaded {len(self.translations)} translations")
+        print(f"Successfully loaded {len(self.Translations)} translations")
     
     ## Get a specific verse by reference.
     ## @param[in] translation - Translation code (e.g., 'KJV').
@@ -129,7 +132,7 @@ class BibleParser:
     def get_verse(self, translation: str, book: str, chapter: int, verse: int) -> Optional[BibleVerse]:
         osis_id = f"{book}.{chapter}.{verse}"
         index_key = f"{translation}:{osis_id}"
-        return self.verse_index.get(index_key)
+        return self.VerseIndex.get(index_key)
     
     ## Search for verses containing the query text.
     ## @param[in] query - Search query (case-insensitive).
@@ -141,13 +144,13 @@ class BibleParser:
         query_lower = query.lower()
         results = []
         
-        translations_to_search = [translation] if translation else self.translations.keys()
+        translations_to_search = [translation] if translation else self.Translations.keys()
         
         for trans_name in translations_to_search:
-            if trans_name not in self.translations:
+            if trans_name not in self.Translations:
                 continue
                 
-            for book_verses in self.translations[trans_name].values():
+            for book_verses in self.Translations[trans_name].values():
                 for verse in book_verses:
                     if query_lower in verse.text.lower():
                         results.append(verse)
@@ -167,7 +170,7 @@ class BibleParser:
         keywords_lower = [kw.lower() for kw in keywords]
         results = []
         
-        translations_to_search = [translation] if translation else self.translations.keys()
+        translations_to_search = [translation] if translation else self.Translations.keys()
         
         for trans_name in translations_to_search:
             # Handle both filename format ('kjv.xml') and code format ('KJV')
@@ -176,10 +179,10 @@ class BibleParser:
             else:
                 translation_filename = trans_name.lower() + '.xml'  # Convert code to filename
 
-            if translation_filename not in self.translations:
+            if translation_filename not in self.Translations:
                 continue
 
-            for book_verses in self.translations[translation_filename].values():
+            for book_verses in self.Translations[translation_filename].values():
                 for verse in book_verses:
                     verse_text_lower = verse.text.lower()
                     if any(keyword in verse_text_lower for keyword in keywords_lower):

@@ -2,11 +2,10 @@
 ## Main application for the Agentic Bible Study Program.
 
 import sys
-import os
 from pathlib import Path
 from typing import Optional
 
-# Add src directory to path for imports
+# Add src directory to path for imports.
 sys.path.append(str(Path(__file__).parent))
 
 from BibleParser import BibleParser
@@ -18,15 +17,21 @@ class BibleStudyApp:
     ## Initialize the Bible study application.
     ## @param[in] data_directory - Path to Bible data files.
     ## @param[in] llm_base_url - Base URL for LM Studio API.
-    def __init__(self, data_directory: str = "data", 
-                 llm_base_url: str = "http://localhost:1234/v1"):
-        self.data_directory = data_directory
-        self.llm_base_url = llm_base_url
+    def __init__(
+            self, 
+            data_directory: str = "data", 
+            llm_base_url: str = "http://localhost:1234/v1"):
+        ## Path to the directory containing Bible data files.
+        self.DataDirectory: str = data_directory
+        ## Base URL for the LM Studio API.
+        self.LlmBaseUrl: str = llm_base_url
         
-        # Initialize components
-        self.bible_parser = None
-        self.llm_client = None
-        self.agents = {}
+        ## Bible parser for accessing Bible data.
+        self.BibleParser: Optional["BibleParser"] = None
+        ## LLM client for AI interactions.
+        self.LlmClient: Optional["LLMClient"] = None
+        ## Dictionary mapping agent names to their instances.
+        self.Agents: dict[str, object] = {}
         
         self._initialize_components()
     
@@ -36,8 +41,8 @@ class BibleStudyApp:
         
         # Initialize Bible parser
         try:
-            self.bible_parser = BibleParser(self.data_directory)
-            self.bible_parser.load_all_translations()
+            self.BibleParser = BibleParser(self.DataDirectory)
+            self.BibleParser.load_all_translations()
             print("✓ Bible data loaded successfully")
         except Exception as e:
             print(f"✗ Error loading Bible data: {e}")
@@ -45,8 +50,8 @@ class BibleStudyApp:
         
         # Initialize LLM client
         try:
-            self.llm_client = LLMClient(self.llm_base_url)
-            if self.llm_client.test_connection():
+            self.LlmClient = LLMClient(self.LlmBaseUrl)
+            if self.LlmClient.test_connection():
                 print("✓ LLM connection successful")
             else:
                 print("✗ LLM connection failed - make sure LM Studio is running")
@@ -56,17 +61,17 @@ class BibleStudyApp:
             return
         
         # Initialize agents
-        self.agents = {
-            'topic_research': TopicResearchAgent(self.bible_parser, self.llm_client),
-            'cross_reference': CrossReferenceAgent(self.bible_parser, self.llm_client),
-            'study_guide': StudyGuideAgent(self.bible_parser, self.llm_client)
+        self.Agents = {
+            'topic_research': TopicResearchAgent(self.BibleParser, self.LlmClient),
+            'cross_reference': CrossReferenceAgent(self.BibleParser, self.LlmClient),
+            'study_guide': StudyGuideAgent(self.BibleParser, self.LlmClient)
         }
         
         print("✓ All components initialized successfully")
     
     ## Run the application in interactive mode.
     def run_interactive(self) -> None:
-        if not self.bible_parser or not self.llm_client:
+        if not self.BibleParser or not self.LlmClient:
             print("Application not properly initialized. Exiting.")
             return
         
@@ -130,7 +135,7 @@ class BibleStudyApp:
         print(f"\n🔍 Researching topic: {args}")
         print("Please wait...")
         
-        response = self.agents['topic_research'].research_topic(args)
+        response = self.Agents['topic_research'].research_topic(args)
         
         if response.success:
             print("\n" + "="*60)
@@ -151,7 +156,7 @@ class BibleStudyApp:
         print(f"\n🔗 Finding cross-references for: {args}")
         print("Please wait...")
         
-        response = self.agents['cross_reference'].find_cross_references(args)
+        response = self.Agents['cross_reference'].find_cross_references(args)
         
         if response.success:
             print("\n" + "="*60)
@@ -177,7 +182,7 @@ class BibleStudyApp:
         print(f"\n📖 Creating {guide_type} study guide for: {topic}")
         print("Please wait...")
         
-        response = self.agents['study_guide'].create_study_guide(topic, guide_type=guide_type)
+        response = self.Agents['study_guide'].create_study_guide(topic, guide_type=guide_type)
         
         if response.success:
             print("\n" + "="*60)
@@ -195,9 +200,13 @@ class BibleStudyApp:
             print("Usage: search <query>")
             return
         
+        if not self.BibleParser:
+            print("❌ Bible parser not initialized.")
+            return
+        
         print(f"\n🔍 Searching for: {args}")
         
-        verses = self.bible_parser.search_verses(args, max_results=10)
+        verses = self.BibleParser.search_verses(args, max_results=10)
         
         if verses:
             print(f"\n📖 Found {len(verses)} verses:")

@@ -20,9 +20,11 @@ class TopicResearchAgent:
     ## Initialize the topic research agent.
     ## @param[in] bible_parser - Initialized Bible parser instance.
     ## @param[in] llm_client - Initialized LLM client instance.
-    def __init__(self, bible_parser: BibleParser, llm_client: LLMClient):
-        self.bible_parser = bible_parser
-        self.llm_client = llm_client
+    def __init__(self, bible_parser: 'BibleParser', llm_client: 'LLMClient'):
+        ## Bible parser for accessing Bible data.
+        self.BibleParser: "BibleParser" = bible_parser
+        ## LLM client for AI interactions.
+        self.LlmClient: "LLMClient" = llm_client
         
     ## Research a Bible topic and find relevant verses.
     ## @param[in] topic - The topic to research.
@@ -38,7 +40,7 @@ class TopicResearchAgent:
         Return only the keywords, one per line, without numbering or extra text.
         """
         
-        keywords_response = self.llm_client.generate_response([
+        keywords_response = self.LlmClient.generate_response([
             {"role": "user", "content": keyword_prompt}
         ])
         
@@ -54,7 +56,7 @@ class TopicResearchAgent:
         keywords = [kw.strip() for kw in keywords_response.split('\n') if kw.strip()]
         
         # Search for relevant verses
-        relevant_verses = self.bible_parser.get_verses_by_topic_keywords(
+        relevant_verses = self.BibleParser.get_verses_by_topic_keywords(
             keywords, translation=translation, max_results=max_verses * 2
         )
         
@@ -80,7 +82,7 @@ class TopicResearchAgent:
         Provide a well-structured response that would be helpful for Bible study.
         """
         
-        analysis_response = self.llm_client.generate_response([
+        analysis_response = self.LlmClient.generate_response([
             {"role": "user", "content": analysis_prompt}
         ])
         
@@ -120,8 +122,10 @@ class CrossReferenceAgent:
     ## @param[in] bible_parser - Initialized Bible parser instance.
     ## @param[in] llm_client - Initialized LLM client instance.
     def __init__(self, bible_parser: BibleParser, llm_client: LLMClient):
-        self.bible_parser = bible_parser
-        self.llm_client = llm_client
+        ## Bible parser for accessing Bible data.
+        self.BibleParser: "BibleParser" = bible_parser
+        ## LLM client for AI interactions.
+        self.LlmClient: "LLMClient" = llm_client
     
     ## Find cross-references for a given Bible reference.
     ## @param[in] reference - Bible reference (e.g., "John 3:16").
@@ -141,7 +145,7 @@ class CrossReferenceAgent:
         book, chapter, verse = parsed_ref
         
         # Get the target verse
-        target_verse = self.bible_parser.get_verse(translation, book, chapter, verse)
+        target_verse = self.BibleParser.get_verse(translation, book, chapter, verse)
         if not target_verse:
             return AgentResponse(
                 success=False,
@@ -171,7 +175,7 @@ class CrossReferenceAgent:
         Structure this as a helpful Bible study resource.
         """
         
-        analysis_response = self.llm_client.generate_response([
+        analysis_response = self.LlmClient.generate_response([
             {"role": "user", "content": analysis_prompt}
         ])
         
@@ -200,6 +204,7 @@ class CrossReferenceAgent:
     def _parse_reference(self, reference: str) -> Optional[tuple]:
         import re
         
+        # Simple parsing for common formats like "John 3:16"
         # Pattern for "Book Chapter:Verse" format
         pattern = r'(\w+)\s+(\d+):(\d+)'
         match = re.search(pattern, reference)
@@ -213,7 +218,7 @@ class CrossReferenceAgent:
         return None
     
     ## Find verses related to the target verse.
-    ## @param[in] target_verse - The target verse to find related verses for.
+    ## @param[in] target_verse - The verse to find related verses for.
     ## @param[in] translation - Bible translation to use.
     ## @param[in] max_related - Maximum number of related verses to find.
     ## @return List of related Bible verses.
@@ -222,17 +227,16 @@ class CrossReferenceAgent:
         # Extract key terms from the target verse
         key_terms = self._extract_key_terms(target_verse.text)
         
-        # Search for verses with similar terms
-        related_verses = []
-        for term in key_terms:
-            matches = self.bible_parser.search_verses(term, translation, max_results=10)
-            for match in matches:
-                if match.osis_id != target_verse.osis_id and match not in related_verses:
-                    related_verses.append(match)
-                    if len(related_verses) >= max_related:
-                        break
-            if len(related_verses) >= max_related:
-                break
+        if not key_terms:
+            return []
+        
+        # Search for verses containing these terms
+        related_verses = self.BibleParser.get_verses_by_topic_keywords(
+            key_terms, translation=translation, max_results=max_related * 2
+        )
+        
+        # Filter out the target verse itself
+        related_verses = [v for v in related_verses if v.osis_id != target_verse.osis_id]
         
         return related_verses[:max_related]
     
@@ -266,8 +270,10 @@ class StudyGuideAgent:
     ## @param[in] bible_parser - Initialized Bible parser instance.
     ## @param[in] llm_client - Initialized LLM client instance.
     def __init__(self, bible_parser: BibleParser, llm_client: LLMClient):
-        self.bible_parser = bible_parser
-        self.llm_client = llm_client
+        ## Bible parser for accessing Bible data.
+        self.BibleParser: "BibleParser" = bible_parser
+        ## LLM client for AI interactions.
+        self.LlmClient: "LLMClient" = llm_client
     
     ## Create a comprehensive Bible study guide.
     ## @param[in] topic - The topic for the study guide.
@@ -277,7 +283,7 @@ class StudyGuideAgent:
     def create_study_guide(self, topic: str, translation: str = "KJV", 
                           guide_type: str = "comprehensive") -> AgentResponse:
         # First, research the topic to get relevant verses
-        topic_agent = TopicResearchAgent(self.bible_parser, self.llm_client)
+        topic_agent = TopicResearchAgent(self.BibleParser, self.LlmClient)
         topic_research = topic_agent.research_topic(topic, translation, max_verses=30)
         
         if not topic_research.success:
@@ -314,7 +320,7 @@ class StudyGuideAgent:
         Make it suitable for group Bible study or personal study.
         """
         
-        guide_content = self.llm_client.generate_response([
+        guide_content = self.LlmClient.generate_response([
             {"role": "user", "content": guide_prompt}
         ])
         
@@ -356,7 +362,7 @@ class StudyGuideAgent:
         Make it encouraging and practical for daily spiritual growth.
         """
         
-        guide_content = self.llm_client.generate_response([
+        guide_content = self.LlmClient.generate_response([
             {"role": "user", "content": guide_prompt}
         ])
         
@@ -400,7 +406,7 @@ class StudyGuideAgent:
         Focus on theological depth and academic rigor.
         """
         
-        guide_content = self.llm_client.generate_response([
+        guide_content = self.LlmClient.generate_response([
             {"role": "user", "content": guide_prompt}
         ])
         

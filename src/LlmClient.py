@@ -17,12 +17,15 @@ class LLMClient:
     ## @param[in] timeout - Request timeout in seconds.
     def __init__(self, base_url: str = "http://localhost:1234/v1", 
                  api_key: str = "not-needed", timeout: int = 30):
-        self.base_url = base_url.rstrip('/')
-        self.api_key = api_key
-        self.timeout = timeout
+        ## Base URL for the LM Studio API.
+        self.BaseUrl: str = base_url.rstrip('/')
+        ## API key for authentication (usually not needed for local LM Studio).
+        self.ApiKey: str = api_key
+        ## Request timeout in seconds.
+        self.Timeout: int = timeout
         
-        # Set headers for OpenAI-compatible API
-        self.headers = {
+        ## HTTP headers for API requests.
+        self.Headers: dict[str, str] = {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {api_key}'
         }
@@ -41,10 +44,10 @@ class LLMClient:
                 data_bytes = None
             
             # Create request object
-            req = urllib.request.Request(url, data=data_bytes, headers=self.headers, method=method)
+            req = urllib.request.Request(url, data=data_bytes, headers=self.Headers, method=method)
             
             # Make the request with timeout
-            with urllib.request.urlopen(req, timeout=self.timeout) as response:
+            with urllib.request.urlopen(req, timeout=self.Timeout) as response:
                 response_data = response.read()
                 return json.loads(response_data.decode('utf-8'))
                 
@@ -68,7 +71,7 @@ class LLMClient:
     ## @return True if connection successful, False otherwise.
     def test_connection(self) -> bool:
         try:
-            response_data = self._make_request(f"{self.base_url}/models")
+            response_data = self._make_request(f"{self.BaseUrl}/models")
             return response_data is not None
         except Exception as e:
             print(f"Connection test failed: {e}")
@@ -93,7 +96,7 @@ class LLMClient:
         }
         
         response_data = self._make_request(
-            f"{self.base_url}/chat/completions",
+            f"{self.BaseUrl}/chat/completions",
             method="POST",
             data=payload
         )
