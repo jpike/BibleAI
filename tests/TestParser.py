@@ -9,10 +9,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.BibleParser import BibleParser
 
 ## Test the Bible parser with the namespace fix.
-def test_parser():
+def TestParser():
     try:
         parser = BibleParser()
-        result = parser.parse_translation('kjv.xml')
+        result = parser.ParseTranslation('kjv.xml')
         
         # Print some statistics
         total_verses = sum(len(verses) for verses in result.values())
@@ -35,4 +35,4 @@ def test_parser():
         traceback.print_exc()
 
 if __name__ == "__main__":
-    test_parser() 
+    TestParser() 

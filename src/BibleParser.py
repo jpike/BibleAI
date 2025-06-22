@@ -41,7 +41,7 @@ class BibleParser:
     ## Parse a single Bible translation file.
     ## @param[in] translation_name - Name of the translation file (e.g., 'kjv.xml').
     ## @return Dictionary mapping book names to lists of verses.
-    def parse_translation(self, translation_name: str) -> Dict[str, List[BibleVerse]]:
+    def ParseTranslation(self, translation_name: str) -> Dict[str, List[BibleVerse]]:
         file_path = self.DataDirectoryPath / translation_name
         if not file_path.exists():
             raise FileNotFoundError(f"Translation file not found: {file_path}")
@@ -107,7 +107,7 @@ class BibleParser:
         return verses_by_book
     
     ## Load all available Bible translations from the data directory.
-    def load_all_translations(self) -> None:
+    def LoadAllTranslations(self) -> None:
         xml_files = list(self.DataDirectoryPath.glob("*.xml"))
         
         if not xml_files:
@@ -116,7 +116,7 @@ class BibleParser:
         for xml_file in xml_files:
             translation_name = xml_file.name
             try:
-                verses_by_book = self.parse_translation(translation_name)
+                verses_by_book = self.ParseTranslation(translation_name)
                 self.Translations[translation_name] = verses_by_book
             except Exception as e:
                 print(f"Error parsing {translation_name}: {e}")
@@ -129,7 +129,7 @@ class BibleParser:
     ## @param[in] chapter - Chapter number.
     ## @param[in] verse - Verse number.
     ## @return BibleVerse object if found, None otherwise.
-    def get_verse(self, translation: str, book: str, chapter: int, verse: int) -> Optional[BibleVerse]:
+    def GetVerse(self, translation: str, book: str, chapter: int, verse: int) -> Optional[BibleVerse]:
         osis_id = f"{book}.{chapter}.{verse}"
         index_key = f"{translation}:{osis_id}"
         return self.VerseIndex.get(index_key)
@@ -139,7 +139,7 @@ class BibleParser:
     ## @param[in] translation - Specific translation to search (None for all).
     ## @param[in] max_results - Maximum number of results to return.
     ## @return List of matching BibleVerse objects.
-    def search_verses(self, query: str, translation: Optional[str] = None, 
+    def SearchVerses(self, query: str, translation: Optional[str] = None, 
                      max_results: int = 50) -> List[BibleVerse]:
         query_lower = query.lower()
         results = []
@@ -164,7 +164,7 @@ class BibleParser:
     ## @param[in] translation - Specific translation to search (None for all).
     ## @param[in] max_results - Maximum number of results to return.
     ## @return List of matching BibleVerse objects.
-    def get_verses_by_topic_keywords(self, keywords: List[str], 
+    def GetVersesByTopicKeywords(self, keywords: List[str], 
                                    translation: Optional[str] = None,
                                    max_results: int = 50) -> List[BibleVerse]:
         keywords_lower = [kw.lower() for kw in keywords]

@@ -33,16 +33,16 @@ class BibleStudyApp:
         ## Dictionary mapping agent names to their instances.
         self.Agents: dict[str, object] = {}
         
-        self._initialize_components()
+        self._InitializeComponents()
     
     ## Initialize all application components.
-    def _initialize_components(self) -> None:
+    def _InitializeComponents(self) -> None:
         print("Initializing Bible Study Application...")
         
         # Initialize Bible parser
         try:
             self.BibleParser = BibleParser(self.DataDirectoryPath)
-            self.BibleParser.load_all_translations()
+            self.BibleParser.LoadAllTranslations()
             print("✓ Bible data loaded successfully")
         except Exception as e:
             print(f"✗ Error loading Bible data: {e}")
@@ -51,7 +51,7 @@ class BibleStudyApp:
         # Initialize LLM client
         try:
             self.LlmClient = LLMClient(self.LlmBaseUrl)
-            if self.LlmClient.test_connection():
+            if self.LlmClient.TestConnection():
                 print("✓ LLM connection successful")
             else:
                 print("✗ LLM connection failed - make sure LM Studio is running")
@@ -70,7 +70,7 @@ class BibleStudyApp:
         print("✓ All components initialized successfully")
     
     ## Run the application in interactive mode.
-    def run_interactive(self) -> None:
+    def RunInteractive(self) -> None:
         if not self.BibleParser or not self.LlmClient:
             print("Application not properly initialized. Exiting.")
             return
@@ -99,7 +99,7 @@ class BibleStudyApp:
                     break
                 
                 if user_input.lower() == 'help':
-                    self._show_help()
+                    self._ShowHelp()
                     continue
                 
                 # Parse command
@@ -108,13 +108,13 @@ class BibleStudyApp:
                 args = parts[1] if len(parts) > 1 else ""
                 
                 if command == 'research':
-                    self._handle_research(args)
+                    self._HandleResearch(args)
                 elif command == 'crossref':
-                    self._handle_crossref(args)
+                    self._HandleCrossref(args)
                 elif command == 'guide':
-                    self._handle_guide(args)
+                    self._HandleGuide(args)
                 elif command == 'search':
-                    self._handle_search(args)
+                    self._HandleSearch(args)
                 else:
                     print(f"Unknown command: {command}")
                     print("Type 'help' for available commands")
@@ -127,7 +127,7 @@ class BibleStudyApp:
     
     ## Handle topic research command.
     ## @param[in] args - Research topic arguments.
-    def _handle_research(self, args: str) -> None:
+    def _HandleResearch(self, args: str) -> None:
         if not args:
             print("Usage: research <topic>")
             return
@@ -135,7 +135,7 @@ class BibleStudyApp:
         print(f"\n🔍 Researching topic: {args}")
         print("Please wait...")
         
-        response = self.Agents['topic_research'].research_topic(args)
+        response = self.Agents['topic_research'].ResearchTopic(args)
         
         if response.success:
             print("\n" + "="*60)
@@ -148,7 +148,7 @@ class BibleStudyApp:
     
     ## Handle cross-reference command.
     ## @param[in] args - Cross-reference arguments.
-    def _handle_crossref(self, args: str) -> None:
+    def _HandleCrossref(self, args: str) -> None:
         if not args:
             print("Usage: crossref <reference> (e.g., crossref John 3:16)")
             return
@@ -156,7 +156,7 @@ class BibleStudyApp:
         print(f"\n🔗 Finding cross-references for: {args}")
         print("Please wait...")
         
-        response = self.Agents['cross_reference'].find_cross_references(args)
+        response = self.Agents['cross_reference'].FindCrossReferences(args)
         
         if response.success:
             print("\n" + "="*60)
@@ -169,7 +169,7 @@ class BibleStudyApp:
     
     ## Handle study guide command.
     ## @param[in] args - Study guide arguments.
-    def _handle_guide(self, args: str) -> None:
+    def _HandleGuide(self, args: str) -> None:
         if not args:
             print("Usage: guide <topic> [type]")
             print("Types: comprehensive, devotional, theological")
@@ -182,7 +182,7 @@ class BibleStudyApp:
         print(f"\n📖 Creating {guide_type} study guide for: {topic}")
         print("Please wait...")
         
-        response = self.Agents['study_guide'].create_study_guide(topic, guide_type=guide_type)
+        response = self.Agents['study_guide'].CreateStudyGuide(topic, guide_type=guide_type)
         
         if response.success:
             print("\n" + "="*60)
@@ -195,7 +195,7 @@ class BibleStudyApp:
     
     ## Handle verse search command.
     ## @param[in] args - Search query arguments.
-    def _handle_search(self, args: str) -> None:
+    def _HandleSearch(self, args: str) -> None:
         if not args:
             print("Usage: search <query>")
             return
@@ -206,7 +206,7 @@ class BibleStudyApp:
         
         print(f"\n🔍 Searching for: {args}")
         
-        verses = self.BibleParser.search_verses(args, max_results=10)
+        verses = self.BibleParser.SearchVerses(args, max_results=10)
         
         if verses:
             print(f"\n📖 Found {len(verses)} verses:")
@@ -219,7 +219,7 @@ class BibleStudyApp:
             print("❌ No verses found matching your search.")
     
     ## Show help information.
-    def _show_help(self) -> None:
+    def _ShowHelp(self) -> None:
         print("\n" + "="*60)
         print("📖 BIBLE STUDY COMMANDS")
         print("="*60)
@@ -245,7 +245,7 @@ class BibleStudyApp:
 
 
 ## Main entry point.
-def main():
+def Main():
     # Check if data directory exists
     data_directory_path = "data"
     if not Path(data_directory_path).exists():
@@ -255,7 +255,7 @@ def main():
     
     # Create and run the application
     app = BibleStudyApp(data_directory_path)
-    app.run_interactive()
+    app.RunInteractive()
 
 if __name__ == "__main__":
-    main() 
+    Main() 

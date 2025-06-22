@@ -35,7 +35,7 @@ class LLMClient:
     ## @param[in] method - HTTP method (GET or POST).
     ## @param[in] data - Data to send with POST request.
     ## @return Response data as dictionary, or None if failed.
-    def _make_request(self, url: str, method: str = "GET", data: Optional[Dict] = None) -> Optional[Dict]:  
+    def _MakeRequest(self, url: str, method: str = "GET", data: Optional[Dict] = None) -> Optional[Dict]:  
         try:
             # Prepare the request
             if data:
@@ -69,9 +69,9 @@ class LLMClient:
 
     ## Test the connection to the LLM API.
     ## @return True if connection successful, False otherwise.
-    def test_connection(self) -> bool:
+    def TestConnection(self) -> bool:
         try:
-            response_data = self._make_request(f"{self.BaseUrl}/models")
+            response_data = self._MakeRequest(f"{self.BaseUrl}/models")
             return response_data is not None
         except Exception as e:
             print(f"Connection test failed: {e}")
@@ -83,7 +83,7 @@ class LLMClient:
     ## @param[in] temperature - Sampling temperature (0.0 to 2.0).
     ## @param[in] max_tokens - Maximum tokens to generate.
     ## @return Generated response text, or None if failed.
-    def generate_response(self, messages: List[Dict[str, str]], 
+    def GenerateResponse(self, messages: List[Dict[str, str]], 
                          model: str = "local-model",
                          temperature: float = 0.7,
                          max_tokens: int = 1000) -> Optional[str]:
@@ -95,7 +95,7 @@ class LLMClient:
             "stream": False
         }
         
-        response_data = self._make_request(
+        response_data = self._MakeRequest(
             f"{self.BaseUrl}/chat/completions",
             method="POST",
             data=payload
@@ -110,13 +110,13 @@ class LLMClient:
     ## Generate response with retry logic.
     ## @param[in] messages - List of message dictionaries.
     ## @param[in] max_retries - Maximum number of retry attempts.
-    ## @param[in] **kwargs - Additional arguments for generate_response.
+    ## @param[in] **kwargs - Additional arguments for GenerateResponse.
     ## @return Generated response text, or None if all retries failed.
-    def generate_with_retry(self, messages: List[Dict[str, str]], 
+    def GenerateWithRetry(self, messages: List[Dict[str, str]], 
                            max_retries: int = 3,
                            **kwargs) -> Optional[str]:
         for attempt in range(max_retries):
-            response = self.generate_response(messages, **kwargs)
+            response = self.GenerateResponse(messages, **kwargs)
             if response is not None:
                 return response
             
