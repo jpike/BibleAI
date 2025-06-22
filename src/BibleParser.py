@@ -43,7 +43,8 @@ class BibleParser:
     ## @return Dictionary mapping book names to lists of verses.
     def ParseTranslation(self, translation_name: str) -> Dict[str, List[BibleVerse]]:
         file_path = self.DataDirectoryPath / translation_name
-        if not file_path.exists():
+        file_exists = file_path.exists()
+        if not file_exists:
             raise FileNotFoundError(f"Translation file not found: {file_path}")
             
         print(f"Parsing {translation_name}...")
@@ -66,7 +67,10 @@ class BibleParser:
             osis_id = verse_elem.get('osisID', '')
             text = verse_elem.text or ''
             
-            if not osis_id or not text.strip():
+            osis_id_valid = bool(osis_id)
+            text_valid = bool(text.strip())
+            verse_data_valid = osis_id_valid and text_valid
+            if not verse_data_valid:
                 continue
                 
             # Parse OSIS ID (e.g., 'Gen.1.1')
@@ -174,7 +178,8 @@ class BibleParser:
         
         for trans_name in translations_to_search:
             # Handle both filename format ('kjv.xml') and code format ('KJV')
-            if trans_name.endswith('.xml'):
+            is_xml_filename = trans_name.endswith('.xml')
+            if is_xml_filename:
                 translation_filename = trans_name  # Already in filename format
             else:
                 translation_filename = trans_name.lower() + '.xml'  # Convert code to filename

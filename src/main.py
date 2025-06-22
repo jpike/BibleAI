@@ -31,7 +31,7 @@ class BibleStudyApp:
         ## LLM client for AI interactions.
         self.LlmClient: Optional["LLMClient"] = None
         ## Dictionary mapping agent names to their instances.
-        self.Agents: dict[str, object] = {}
+        self.Agents: dict[str, "TopicResearchAgent | CrossReferenceAgent | StudyGuideAgent"] = {}
         
         self._InitializeComponents()
     
@@ -51,7 +51,8 @@ class BibleStudyApp:
         # Initialize LLM client
         try:
             self.LlmClient = LLMClient(self.LlmBaseUrl)
-            if self.LlmClient.TestConnection():
+            llm_connection_successful = self.LlmClient.TestConnection()
+            if llm_connection_successful:
                 print("✓ LLM connection successful")
             else:
                 print("✗ LLM connection failed - make sure LM Studio is running")
@@ -71,7 +72,8 @@ class BibleStudyApp:
     
     ## Run the application in interactive mode.
     def RunInteractive(self) -> None:
-        if not self.BibleParser or not self.LlmClient:
+        components_initialized = self.BibleParser is not None and self.LlmClient is not None
+        if not components_initialized:
             print("Application not properly initialized. Exiting.")
             return
         
@@ -94,11 +96,14 @@ class BibleStudyApp:
                 if not user_input:
                     continue
                 
-                if user_input.lower() in ['quit', 'exit', 'q']:
+                user_input_lower = user_input.lower()
+                is_quit_command = user_input_lower in ['quit', 'exit', 'q']
+                if is_quit_command:
                     print("Goodbye! 🙏")
                     break
                 
-                if user_input.lower() == 'help':
+                is_help_command = user_input_lower == 'help'
+                if is_help_command:
                     self._ShowHelp()
                     continue
                 
@@ -200,7 +205,8 @@ class BibleStudyApp:
             print("Usage: search <query>")
             return
         
-        if not self.BibleParser:
+        bible_parser_available = self.BibleParser is not None
+        if not bible_parser_available:
             print("❌ Bible parser not initialized.")
             return
         
@@ -248,7 +254,8 @@ class BibleStudyApp:
 def Main():
     # Check if data directory exists
     data_directory_path = "data"
-    if not Path(data_directory_path).exists():
+    data_directory_exists = Path(data_directory_path).exists()
+    if not data_directory_exists:
         print(f"Error: Data directory '{data_directory_path}' not found.")
         print("Make sure you have Bible XML files in the data directory.")
         return
