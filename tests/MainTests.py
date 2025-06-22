@@ -18,19 +18,24 @@ class MainTests(unittest.TestCase):
     ## Set up test environment before each test.
     def setUp(self):
         # Create a temporary directory for test data
-        self.test_dir = tempfile.mkdtemp()
-        self.test_data_dir = pathlib.Path(self.test_dir)
+        self.test_data_dir = pathlib.Path("test_data")
+        self.test_data_dir.mkdir(exist_ok=True)
+        
+        # Create BibleVerses subdirectory to match new structure
+        self.test_bible_verses_dir = self.test_data_dir / "BibleVerses"
+        self.test_bible_verses_dir.mkdir(exist_ok=True)
         
         # Create test XML file
         self._CreateTestXmlFile()
         
-        # Create app instance with test data directory
+        # Initialize app
         self.app = BibleStudyApp(str(self.test_data_dir), "http://localhost:1234/v1")
     
     ## Clean up test environment after each test.
     def tearDown(self):
         # Remove temporary directory
-        shutil.rmtree(self.test_dir)
+        if self.test_data_dir.exists():
+            shutil.rmtree(self.test_data_dir)
     
     ## Create test XML file for testing.
     def _CreateTestXmlFile(self):
@@ -46,7 +51,7 @@ class MainTests(unittest.TestCase):
     </osisText>
 </osis>'''
         
-        test_file_path = self.test_data_dir / "kjv.xml"
+        test_file_path = self.test_bible_verses_dir / "kjv.xml"
         with open(test_file_path, 'w', encoding='utf-8') as f:
             f.write(test_xml_content)
     

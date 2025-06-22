@@ -19,19 +19,24 @@ class BibleParserTests(unittest.TestCase):
     ## Set up test environment before each test.
     def setUp(self):
         # Create a temporary directory for test data
-        self.test_dir = tempfile.mkdtemp()
-        self.test_data_dir = pathlib.Path(self.test_dir)
+        self.test_data_dir = pathlib.Path("test_data")
+        self.test_data_dir.mkdir(exist_ok=True)
+        
+        # Create BibleVerses subdirectory to match new structure
+        self.test_bible_verses_dir = self.test_data_dir / "BibleVerses"
+        self.test_bible_verses_dir.mkdir(exist_ok=True)
         
         # Create test XML files
         self._CreateTestXmlFiles()
         
-        # Initialize parser with test data directory
+        # Initialize parser
         self.parser = BibleParser(str(self.test_data_dir))
     
     ## Clean up test environment after each test.
     def tearDown(self):
         # Remove temporary directory
-        shutil.rmtree(self.test_dir)
+        if self.test_data_dir.exists():
+            shutil.rmtree(self.test_data_dir)
     
     ## Create test XML files for testing.
     def _CreateTestXmlFiles(self):
@@ -60,7 +65,7 @@ class BibleParserTests(unittest.TestCase):
 </osis>'''
         
         # Write test XML file
-        test_file_path = self.test_data_dir / "test.xml"
+        test_file_path = self.test_bible_verses_dir / "test.xml"
         with open(test_file_path, 'w', encoding='utf-8') as f:
             f.write(test_xml_content)
         
@@ -77,7 +82,7 @@ class BibleParserTests(unittest.TestCase):
     </osisText>
 </osis>'''
         
-        test2_file_path = self.test_data_dir / "test2.xml"
+        test2_file_path = self.test_bible_verses_dir / "test2.xml"
         with open(test2_file_path, 'w', encoding='utf-8') as f:
             f.write(test2_xml_content)
     
@@ -250,7 +255,7 @@ class BibleParserTests(unittest.TestCase):
     </osisText>
 </osis>'''
         
-        invalid_file_path = self.test_data_dir / "invalid.xml"
+        invalid_file_path = self.test_bible_verses_dir / "invalid.xml"
         with open(invalid_file_path, 'w', encoding='utf-8') as f:
             f.write(invalid_xml_content)
         
@@ -274,7 +279,7 @@ class BibleParserTests(unittest.TestCase):
     </osisText>
 </osis>'''
         
-        empty_file_path = self.test_data_dir / "empty.xml"
+        empty_file_path = self.test_bible_verses_dir / "empty.xml"
         with open(empty_file_path, 'w', encoding='utf-8') as f:
             f.write(empty_xml_content)
         

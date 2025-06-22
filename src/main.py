@@ -255,10 +255,18 @@ class BibleStudyApp:
 
 ## Main function to run the Bible study application.
 def Main():
-    # Check if data directory exists
+    # Check if data directory and BibleVerses subdirectory exist
     data_dir = pathlib.Path("data")
-    if not data_dir.exists():
+    bible_verses_dir = data_dir / "BibleVerses"
+    
+    data_directory_exists = data_dir.exists()
+    if not data_directory_exists:
         print("Error: 'data' directory not found. Please ensure Bible data files are available.")
+        return
+    
+    bible_verses_directory_exists = bible_verses_dir.exists()
+    if not bible_verses_directory_exists:
+        print("Error: 'data/BibleVerses' directory not found. Please ensure Bible XML files are in the BibleVerses subdirectory.")
         return
     
     # Create and run the application
