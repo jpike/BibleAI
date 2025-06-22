@@ -61,14 +61,17 @@ class BibleParser:
         tree = ET.parse(file_path)
         root = tree.getroot()
         
+        # Define the OSIS namespace
+        osis_namespace = {'osis': 'http://www.bibletechnologies.net/2003/OSIS/namespace'}
+        
         # Extract translation name from filename
         translation_code = translation_name.replace('.xml', '').upper()
         
         verses_by_book = {}
         verse_count = 0
         
-        # Find all verse elements
-        for verse_elem in root.findall('.//verse'):
+        # Find all verse elements using the correct namespace and recursive search
+        for verse_elem in root.findall('.//osis:verse', osis_namespace):
             osis_id = verse_elem.get('osisID', '')
             text = verse_elem.text or ''
             
@@ -197,10 +200,11 @@ class BibleParser:
         translations_to_search = [translation] if translation else self.translations.keys()
         
         for trans_name in translations_to_search:
-            if trans_name not in self.translations:
+            translation_filename = trans_name.lower() + '.xml'
+            if translation_filename not in self.translations:
                 continue
                 
-            for book_verses in self.translations[trans_name].values():
+            for book_verses in self.translations[translation_filename].values():
                 for verse in book_verses:
                     verse_text_lower = verse.text.lower()
                     if any(keyword in verse_text_lower for keyword in keywords_lower):

@@ -4,8 +4,8 @@ Bible Study Agents for different types of analysis and tasks.
 
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
-from .bible_parser import BibleVerse, BibleParser
-from .llm_client import LLMClient
+from bible_parser import BibleVerse, BibleParser
+from llm_client import LLMClient
 
 
 @dataclass
