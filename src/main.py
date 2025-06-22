@@ -2,11 +2,11 @@
 ## Main application for the Agentic Bible Study Program.
 
 import sys
-from pathlib import Path
+import pathlib
 from typing import Optional
 
 # Add src directory to path for imports.
-sys.path.append(str(Path(__file__).parent))
+sys.path.append(str(pathlib.Path(__file__).parent))
 
 from BibleParser import BibleParser
 from LlmClient import LLMClient
@@ -268,7 +268,7 @@ class BibleStudyApp:
 def Main():
     # Check if data directory exists
     data_directory_path = "data"
-    data_directory_exists = Path(data_directory_path).exists()
+    data_directory_exists = pathlib.Path(data_directory_path).exists()
     if not data_directory_exists:
         print(f"Error: Data directory '{data_directory_path}' not found.")
         print("Make sure you have Bible XML files in the data directory.")

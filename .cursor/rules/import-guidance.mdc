@@ -1,0 +1,54 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Import Statement Guidance
+
+## Standard Library Imports
+- **Do NOT** use `from module import symbol` for standard library modules (e.g., `from pathlib import Path` is NOT allowed).
+- **DO** use `import module` for standard library modules (e.g., `import pathlib`).
+- **Exception:** For the `typing` module, it is acceptable to use `from typing import ...` for type annotations.
+
+## Third-Party Library Imports
+- **DO** use `import module` for third-party libraries.
+- **Do NOT** use `from module import symbol` for third-party libraries.
+
+## Custom Project Code Imports
+- **DO** use `from ModuleName import Symbol` for importing classes or functions from other modules within this project.
+- **DO** use relative imports (e.g., `from .ModuleName import Symbol`) when working within the `src/` package to ensure correct module resolution.
+
+## Rationale
+- This approach makes it clear where each symbol comes from, improving code readability and maintainability.
+- The only exception is for `typing` symbols, which are treated as language-level constructs.
+
+## Examples
+
+**Standard Library:**
+```python
+import pathlib  # YES
+from pathlib import Path  # NO
+
+import dataclasses  # YES
+from dataclasses import dataclass  # NO
+```
+
+**Typing:**
+Don't import symbols like `list` or `dict` that are built into the Python language now.
+```python
+from typing import Optional  # YES
+```
+
+**Custom Project Code:**
+```python
+from BibleParser import BibleParser  # YES (if not in a package context)
+```
+
+**Third-Party:**
+```python
+import requests  # YES
+from requests import get  # NO
+```
+
+See [src/Main.py](mdc:src/Main.py), [src/BibleParser.py](mdc:src/BibleParser.py), and [src/BibleAgents.py](mdc:src/BibleAgents.py) for examples of correct import usage.
+

@@ -1,8 +1,9 @@
 ## @package BibleAgents
 ## AI Agents for Bible study tasks including topic research, cross-references, and study guides.
 
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
+import dataclasses
+from typing import Any, Optional
+
 from BibleParser import BibleVerse, BibleParser
 from LlmClient import LLMClient
 
@@ -14,12 +15,12 @@ DEFAULT_KEYWORD_COUNT = 5
 MIN_WORD_LENGTH_FOR_KEYWORDS = 4
 
 ## Response from a Bible study agent.
-@dataclass
+@dataclasses.dataclass
 class AgentResponse:
     success: bool
     content: str
-    verses_used: List[BibleVerse]
-    metadata: Dict[str, Any]
+    verses_used: list[BibleVerse]
+    metadata: dict[str, Any]
 
 
 ## Agent for researching Bible topics and finding relevant verses.
@@ -116,7 +117,7 @@ class TopicResearchAgent:
     ## Format verses for LLM analysis.
     ## @param[in] verses - List of Bible verses to format.
     ## @return Formatted string of verses.
-    def _FormatVersesForAnalysis(self, verses: List[BibleVerse]) -> str:
+    def _FormatVersesForAnalysis(self, verses: list[BibleVerse]) -> str:
         formatted = []
         for verse in verses:
             formatted.append(f"{verse.book} {verse.chapter}:{verse.verse} ({verse.translation}) - {verse.text}")
@@ -235,7 +236,7 @@ class CrossReferenceAgent:
     ## @param[in] max_related - Maximum number of related verses to find.
     ## @return List of related Bible verses.
     def _FindRelatedVerses(self, target_verse: BibleVerse, translation: str, 
-                           max_related: int = DEFAULT_CROSS_REFERENCE_MAX_RELATED) -> List[BibleVerse]:
+                           max_related: int = DEFAULT_CROSS_REFERENCE_MAX_RELATED) -> list[BibleVerse]:
         # Extract key terms from the target verse
         key_terms = self._ExtractKeyTerms(target_verse.text)
         
@@ -255,7 +256,7 @@ class CrossReferenceAgent:
     ## Extract key terms from verse text for cross-reference search.
     ## @param[in] text - Verse text to extract terms from.
     ## @return List of key terms.
-    def _ExtractKeyTerms(self, text: str) -> List[str]:
+    def _ExtractKeyTerms(self, text: str) -> list[str]:
         # Simple approach: extract words longer than 4 characters
         words = text.split()
         key_terms = [word.lower() for word in words if len(word) > MIN_WORD_LENGTH_FOR_KEYWORDS]
@@ -269,7 +270,7 @@ class CrossReferenceAgent:
     ## Format verses for LLM analysis.
     ## @param[in] verses - List of Bible verses to format.
     ## @return Formatted string of verses.
-    def _FormatVersesForAnalysis(self, verses: List[BibleVerse]) -> str:
+    def _FormatVersesForAnalysis(self, verses: list[BibleVerse]) -> str:
         formatted = []
         for verse in verses:
             formatted.append(f"{verse.book} {verse.chapter}:{verse.verse} - {verse.text}")
@@ -315,7 +316,7 @@ class StudyGuideAgent:
     ## @param[in] topic - The topic for the study guide.
     ## @param[in] verses - List of Bible verses to use.
     ## @return AgentResponse with the comprehensive guide.
-    def _CreateComprehensiveGuide(self, topic: str, verses: List[BibleVerse]) -> AgentResponse:
+    def _CreateComprehensiveGuide(self, topic: str, verses: list[BibleVerse]) -> AgentResponse:
         guide_prompt = f"""
         Create a comprehensive Bible study guide on "{topic}" using these verses:
         
@@ -359,7 +360,7 @@ class StudyGuideAgent:
     ## @param[in] topic - The topic for the study guide.
     ## @param[in] verses - List of Bible verses to use.
     ## @return AgentResponse with the devotional guide.
-    def _CreateDevotionalGuide(self, topic: str, verses: List[BibleVerse]) -> AgentResponse:
+    def _CreateDevotionalGuide(self, topic: str, verses: list[BibleVerse]) -> AgentResponse:
         guide_prompt = f"""
         Create a devotional Bible study guide on "{topic}" using these verses:
         
@@ -401,7 +402,7 @@ class StudyGuideAgent:
     ## @param[in] topic - The topic for the study guide.
     ## @param[in] verses - List of Bible verses to use.
     ## @return AgentResponse with the theological guide.
-    def _CreateTheologicalGuide(self, topic: str, verses: List[BibleVerse]) -> AgentResponse:
+    def _CreateTheologicalGuide(self, topic: str, verses: list[BibleVerse]) -> AgentResponse:
         guide_prompt = f"""
         Create a theological Bible study guide on "{topic}" using these verses:
         
@@ -444,7 +445,7 @@ class StudyGuideAgent:
     ## Format verses for LLM analysis.
     ## @param[in] verses - List of Bible verses to format.
     ## @return Formatted string of verses.
-    def _FormatVersesForAnalysis(self, verses: List[BibleVerse]) -> str:
+    def _FormatVersesForAnalysis(self, verses: list[BibleVerse]) -> str:
         formatted = []
         for verse in verses:
             formatted.append(f"{verse.book} {verse.chapter}:{verse.verse} - {verse.text}")
