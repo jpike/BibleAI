@@ -200,10 +200,15 @@ class BibleParser:
         translations_to_search = [translation] if translation else self.translations.keys()
         
         for trans_name in translations_to_search:
-            translation_filename = trans_name.lower() + '.xml'
+            # Handle both filename format ('kjv.xml') and code format ('KJV')
+            if trans_name.endswith('.xml'):
+                translation_filename = trans_name  # Already in filename format
+            else:
+                translation_filename = trans_name.lower() + '.xml'  # Convert code to filename
+
             if translation_filename not in self.translations:
                 continue
-                
+
             for book_verses in self.translations[translation_filename].values():
                 for verse in book_verses:
                     verse_text_lower = verse.text.lower()
@@ -211,5 +216,5 @@ class BibleParser:
                         results.append(verse)
                         if len(results) >= max_results:
                             return results
-                            
+                                
         return results 
