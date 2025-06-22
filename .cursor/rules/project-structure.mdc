@@ -1,0 +1,50 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# BibleAI Project Structure
+
+## Overview
+BibleAI is an agentic Bible study program that uses local LLM integration to provide intelligent Bible analysis, cross-references, and study guides.
+
+## Project Layout
+```
+BibleAI/
+├── data/                    # Bible XML files (OSIS format)
+│   ├── kjv.xml             # King James Version
+│   ├── web.xml             # World English Bible
+│   └── ylt.xml             # Young's Literal Translation
+├── src/                    # Main source code
+│   ├── BibleParser.py      # OSIS XML parser and verse indexing
+│   ├── LlmClient.py        # Local LLM client (LM Studio integration)
+│   ├── BibleAgents.py      # AI agents for Bible study tasks
+│   └── Main.py             # Main application entry point
+├── tests/                  # Test files
+│   └── TestParser.py       # Bible parser tests
+├── requirements.txt        # Python dependencies
+└── README.md              # Project documentation
+```
+
+## Key Components
+
+### Core Modules
+- **[BibleParser.py](mdc:src/BibleParser.py)** - Handles parsing OSIS XML Bible files and provides verse search/indexing
+- **[LlmClient.py](mdc:src/LlmClient.py)** - Manages communication with local LM Studio API
+- **[BibleAgents.py](mdc:src/BibleAgents.py)** - Contains AI agents for topic research, cross-references, and study guides
+- **[Main.py](mdc:src/Main.py)** - Main application with interactive command-line interface
+
+### Data Files
+The `data/` directory contains OSIS XML Bible translations that are parsed by the BibleParser module.
+
+### Entry Point
+Run the application using: `python src/Main.py`
+
+## File Naming Convention
+All Python source files use PascalCase/UpperCamelCase naming:
+- `BibleParser.py` (not `bible_parser.py`)
+- `LlmClient.py` (not `llm_client.py`)
+- `BibleAgents.py` (not `bible_agents.py`)
+- `Main.py` (not `main.py`)
+- `TestParser.py` (not `test_parser.py`)
+

@@ -1,0 +1,93 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# BibleAI Architecture Guide
+
+## System Architecture
+
+### Core Components
+The BibleAI system consists of four main components that work together:
+
+1. **[BibleParser.py](mdc:src/BibleParser.py)** - Data Layer
+   - Parses OSIS XML Bible files
+   - Provides verse indexing and search functionality
+   - Manages multiple Bible translations
+
+2. **[LlmClient.py](mdc:src/LlmClient.py)** - Communication Layer
+   - Handles HTTP communication with local LM Studio API
+   - Provides retry logic and error handling
+   - Manages API authentication and request formatting
+
+3. **[BibleAgents.py](mdc:src/BibleAgents.py)** - AI Layer
+   - Contains specialized AI agents for different Bible study tasks
+   - Coordinates between Bible data and LLM responses
+   - Provides structured analysis and study guides
+
+4. **[Main.py](mdc:src/Main.py)** - Application Layer
+   - Provides user interface and command processing
+   - Orchestrates interactions between components
+   - Handles user input and output formatting
+
+## Design Patterns
+
+### Agent Pattern
+The system uses an agent-based architecture where specialized AI agents handle different types of Bible study tasks:
+
+- **TopicResearchAgent**: Researches Bible topics and finds relevant verses
+- **CrossReferenceAgent**: Finds cross-references and related passages
+- **StudyGuideAgent**: Creates comprehensive study guides
+
+### Data Transfer Objects (DTOs)
+```python
+@dataclass
+class AgentResponse:
+    success: bool
+    content: str
+    verses_used: List[BibleVerse]
+    metadata: Dict[str, Any]
+```
+
+### Factory Pattern
+The main application creates and manages instances of different agents based on user commands.
+
+## Data Flow
+
+### Typical User Interaction Flow
+1. User enters command in **[Main.py](mdc:src/Main.py)**
+2. Command is parsed and routed to appropriate agent in **[BibleAgents.py](mdc:src/BibleAgents.py)**
+3. Agent uses **[BibleParser.py](mdc:src/BibleParser.py)** to find relevant Bible verses
+4. Agent uses **[LlmClient.py](mdc:src/LlmClient.py)** to generate AI analysis
+5. Results are formatted and returned to user
+
+### Bible Data Processing
+1. **[BibleParser.py](mdc:src/BibleParser.py)** loads OSIS XML files from `data/` directory
+2. Verses are parsed and indexed for fast lookup
+3. Multiple translations are supported (KJV, WEB, YLT)
+4. Search and keyword matching functionality is provided
+
+## Dependencies
+
+### External Dependencies
+- **LM Studio**: Local LLM server (OpenAI-compatible API)
+- **OSIS XML**: Bible data format
+- **Python Standard Library**: xml.etree, urllib, json, etc.
+
+### Internal Dependencies
+- **[BibleParser.py](mdc:src/BibleParser.py)** is used by **[BibleAgents.py](mdc:src/BibleAgents.py)**
+- **[LlmClient.py](mdc:src/LlmClient.py)** is used by **[BibleAgents.py](mdc:src/BibleAgents.py)**
+- **[Main.py](mdc:src/Main.py)** orchestrates all other components
+
+## Error Handling Strategy
+
+### Graceful Degradation
+- If LLM connection fails, system continues with Bible search functionality
+- If Bible data is missing, clear error messages are provided
+- Network timeouts and retries are handled automatically
+
+### Error Propagation
+- Errors are caught at appropriate levels
+- Meaningful error messages are provided to users
+- System state remains consistent even when errors occur
+

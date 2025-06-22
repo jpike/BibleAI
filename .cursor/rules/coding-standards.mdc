@@ -106,3 +106,121 @@ self.text = re.sub(r'\s+', ' ', self.text)
 - Use `List[Type]`, `Dict[KeyType, ValueType]` for collections
 - Type information belongs in annotations, not in Doxygen comments
 
+# BibleAI Coding Standards
+
+## Naming Conventions
+
+### File Names
+All Python source files use **PascalCase/UpperCamelCase**:
+- `BibleParser.py` ✅
+- `LlmClient.py` ✅
+- `BibleAgents.py` ✅
+- `Main.py` ✅
+- `TestParser.py` ✅
+
+### Class Names
+Use **PascalCase/UpperCamelCase**:
+```python
+class BibleParser:
+class TopicResearchAgent:
+class AgentResponse:
+```
+
+### Function/Method Names
+Use **PascalCase/UpperCamelCase**:
+```python
+def ParseTranslation(self):
+def ResearchTopic(self):
+def FindCrossReferences(self):
+```
+
+### Member Variables/Fields
+Use **PascalCase/UpperCamelCase**:
+```python
+self.DataDirectory = data_directory
+self.Translations = {}
+self.VerseIndex = {}
+```
+
+### Local Variables/Parameters
+Use **lower_snake_case**:
+```python
+def my_function(param_name: str) -> str:
+    local_variable = "value"
+    another_local = 42
+```
+
+### Constants
+Use **UPPER_SNAKE_CASE**:
+```python
+MAX_RESULTS = 50
+DEFAULT_TIMEOUT = 30
+```
+
+## Documentation Standards
+
+### Doxygen Style Comments
+All documentation uses Doxygen style with `##` prefix:
+
+```python
+## @package BibleParser
+## Bible Data Parser for OSIS XML format.
+
+## Initialize the Bible parser.
+## @param[in] data_directory - Path to directory containing OSIS XML files.
+def __init__(self, data_directory: str = "data"):
+```
+
+### Function Documentation
+- Use `@param[in]` for input parameters
+- Use `@param[out]` for output parameters
+- Use `@param[in,out]` for input/output parameters
+- Use `@return` for return value documentation
+- Separate parameter name and description with ` - ` (space-dash-space)
+
+### Comment Style
+- **Function body comments**: Use `UPPERCASE` for major blocks
+- **Detailed comments**: Use normal English sentence capitalization
+
+```python
+def complex_function(self):
+    # VALIDATE INPUT PARAMETERS
+    if not self.is_valid():
+        return None
+    
+    # PROCESS THE DATA
+    result = self.process_data()
+    
+    # This comment explains why we need to normalize the text.
+    self.text = re.sub(r'\s+', ' ', self.text)
+```
+
+## Code Organization
+
+### Import Structure
+```python
+# Standard library imports
+import xml.etree.ElementTree as ET
+from typing import Dict, List, Optional, Tuple
+import re
+from dataclasses import dataclass
+from pathlib import Path
+
+# Local imports (use PascalCase module names)
+from BibleParser import BibleVerse, BibleParser
+from LlmClient import LLMClient
+from BibleAgents import TopicResearchAgent, CrossReferenceAgent, StudyGuideAgent
+```
+
+### Error Handling
+- Use appropriate exception handling
+- Provide meaningful error messages
+- Log errors when appropriate
+- Return meaningful error states
+
+### Type Annotations
+- Use type hints for all function parameters and return values
+- Use `Optional[Type]` for nullable types
+- Use `List[Type]`, `Dict[KeyType, ValueType]` for collections
+- Type information belongs in annotations, not in Doxygen comments
+

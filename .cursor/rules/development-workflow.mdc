@@ -1,0 +1,131 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# BibleAI Development Workflow
+
+## Getting Started
+
+### Prerequisites
+1. Python 3.8+ installed
+2. LM Studio running locally on port 1234
+3. Bible XML files in the `data/` directory
+
+### Setup
+1. Install dependencies: `pip install -r requirements.txt`
+2. Ensure LM Studio is running with OpenAI-compatible API
+3. Verify Bible XML files are present in `data/` directory
+
+### Running the Application
+```bash
+python src/Main.py
+```
+
+## Development Guidelines
+
+### File Naming
+When creating new Python files, always use **PascalCase/UpperCamelCase**:
+- ✅ `NewFeature.py`
+- ❌ `new_feature.py`
+- ❌ `newfeature.py`
+
+### Import Statements
+When importing from local modules, use PascalCase names:
+```python
+# Correct
+from BibleParser import BibleParser
+from LlmClient import LLMClient
+from BibleAgents import TopicResearchAgent
+
+# Incorrect
+from bible_parser import BibleParser
+from llm_client import LLMClient
+```
+
+### Adding New Features
+
+#### Adding a New Agent
+1. Create new agent class in **[BibleAgents.py](mdc:src/BibleAgents.py)**
+2. Follow the existing pattern:
+   ```python
+   class NewFeatureAgent:
+       def __init__(self, bible_parser: BibleParser, llm_client: LLMClient):
+           self.bible_parser = bible_parser
+           self.llm_client = llm_client
+       
+       def process_feature(self, input_data: str) -> AgentResponse:
+           # Implementation here
+           pass
+   ```
+
+#### Adding New Commands
+1. Add command handling in **[Main.py](mdc:src/Main.py)**
+2. Update help text and command parsing
+3. Follow existing pattern for command handlers
+
+### Testing
+
+#### Running Tests
+```bash
+python tests/TestParser.py
+```
+
+#### Writing New Tests
+1. Create test files in `tests/` directory
+2. Use PascalCase naming: `TestNewFeature.py`
+3. Follow existing test patterns in **[TestParser.py](mdc:tests/TestParser.py)**
+
+### Documentation
+
+#### Adding Documentation
+1. Use Doxygen style comments with `##` prefix
+2. Document all public methods and classes
+3. Include parameter descriptions with `@param[in]` tags
+4. Include return value descriptions with `@return` tags
+
+#### Example Documentation
+```python
+## Process user input and generate response.
+## @param[in] user_input - The user's command or query.
+## @param[in] context - Additional context for processing.
+## @return AgentResponse containing the processed result.
+def ProcessInput(self, user_input: str, context: Dict[str, Any]) -> AgentResponse:
+```
+
+## Code Quality
+
+### Type Annotations
+- Always include type hints for function parameters and return values
+- Use `Optional[Type]` for nullable parameters
+- Use `List[Type]` and `Dict[KeyType, ValueType]` for collections
+
+### Error Handling
+- Use try-catch blocks for external operations (file I/O, network calls)
+- Provide meaningful error messages
+- Return appropriate error states in AgentResponse objects
+
+### Performance Considerations
+- Bible data is loaded once at startup for performance
+- Use appropriate data structures for verse indexing
+- Implement pagination for large result sets
+
+## Troubleshooting
+
+### Common Issues
+
+#### LM Studio Connection Failed
+- Ensure LM Studio is running on `http://localhost:1234`
+- Check that the OpenAI-compatible API is enabled
+- Verify network connectivity
+
+#### Bible Data Not Found
+- Ensure XML files are in the `data/` directory
+- Check file permissions
+- Verify XML files are valid OSIS format
+
+#### Import Errors
+- Ensure all files use PascalCase naming
+- Check that import statements use correct module names
+- Verify Python path includes the `src/` directory
+
