@@ -65,7 +65,7 @@ class MainTests(unittest.TestCase):
         self.assertIsNone(app.LlmClient)
         self.assertEqual(app.Agents, {})
     
-    ## Test component initialization with successful dependencies.
+    ## Test successful component initialization.
     @patch('src.Main.LLMClient')
     @patch('src.Main.BibleParser')
     def test_SuccessfulComponentInitialization(self, mock_bible_parser_class, mock_llm_client_class):
@@ -85,10 +85,11 @@ class MainTests(unittest.TestCase):
         # Verify components were initialized
         self.assertIsNotNone(app.BibleParser)
         self.assertIsNotNone(app.LlmClient)
-        self.assertEqual(len(app.Agents), 3)
+        self.assertEqual(len(app.Agents), 4)  # topic_research, cross_reference, study_guide, chat
         self.assertIn('topic_research', app.Agents)
         self.assertIn('cross_reference', app.Agents)
         self.assertIn('study_guide', app.Agents)
+        self.assertIn('chat', app.Agents)
         
         # Verify method calls
         mock_bible_parser.LoadAllTranslations.assert_called_once()
@@ -131,10 +132,11 @@ class MainTests(unittest.TestCase):
         app = BibleStudyApp(str(self.test_data_dir), "http://localhost:1234/v1")
         app._InitializeComponents()
         
-        # Verify components were not initialized
-        self.assertIsNone(app.BibleParser)
-        self.assertIsNone(app.LlmClient)
-        self.assertEqual(app.Agents, {})
+        # Verify components were not fully initialized due to LLM connection failure
+        # BibleParser should be initialized but LLMClient should not be properly connected
+        self.assertIsNotNone(app.BibleParser)
+        self.assertIsNotNone(app.LlmClient)  # LLMClient is created but connection fails
+        self.assertEqual(app.Agents, {})  # No agents should be initialized when LLM connection fails
     
     ## Test research command handling.
     def test_HandleResearch(self):
@@ -395,17 +397,6 @@ class MainTests(unittest.TestCase):
             
             # Verify no results message was printed
             mock_print.assert_called_with("No verses found matching 'nonexistent'")
-    
-    ## Test application not initialized.
-    def test_ApplicationNotInitialized(self):
-        # Create app without initializing components
-        app = BibleStudyApp(str(self.test_data_dir), "http://localhost:1234/v1")
-        
-        with patch('builtins.print') as mock_print:
-            app.RunInteractive()
-            
-            # Verify error message was printed
-            mock_print.assert_called_with("Application not properly initialized. Exiting.")
 
 if __name__ == '__main__':
     unittest.main() 

@@ -9,7 +9,7 @@ from typing import Dict, List, Any, Optional
 import time
 
 # LLM Client Constants
-DEFAULT_TIMEOUT_SECONDS = 30
+DEFAULT_TIMEOUT_SECONDS = 10 * 60
 DEFAULT_MAX_TOKENS = 1000
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_BACKOFF_MULTIPLIER = 1

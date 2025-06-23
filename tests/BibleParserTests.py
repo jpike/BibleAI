@@ -11,8 +11,8 @@ import pathlib
 import xml.etree.ElementTree as ET
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.BibleParser import BibleParser
-from src.BibleVerse import BibleVerse
+from BibleParser import BibleParser
+from BibleVerse import BibleVerse
 
 ## Test cases for the BibleParser class.
 class BibleParserTests(unittest.TestCase):
@@ -127,9 +127,11 @@ class BibleParserTests(unittest.TestCase):
         self.assertIn("test.xml", self.parser.Translations)
         self.assertIn("test2.xml", self.parser.Translations)
         
-        # Check total verses loaded
-        total_verses = sum(len(verses) for verses in self.parser.Translations.values())
-        self.assertEqual(total_verses, 7)  # 5 from test.xml + 2 from test2.xml
+        # Check total verses loaded from the expected files
+        test_verses = sum(len(verses) for verses in self.parser.Translations["test.xml"].values())
+        test2_verses = sum(len(verses) for verses in self.parser.Translations["test2.xml"].values())
+        total_expected_verses = test_verses + test2_verses
+        self.assertEqual(total_expected_verses, 9)  # 7 from test.xml (5 from Gen + 2 from Exo) + 2 from test2.xml
     
     ## Test getting a specific verse.
     def test_GetVerse(self):

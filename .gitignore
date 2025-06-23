@@ -1,1 +1,6 @@
 **/__pycache__/**/*
+
+ThirdParty/*
+
+**/*.pdf
+**/*.pptx

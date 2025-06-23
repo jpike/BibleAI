@@ -5,9 +5,11 @@
 import unittest
 import sys
 import os
+import pathlib
 import time
 
 # Add the project root to the Python path
+sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / 'src'))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def RunAllTests():

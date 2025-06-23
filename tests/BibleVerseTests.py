@@ -5,9 +5,10 @@
 import unittest
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.BibleVerse import BibleVerse
+from BibleVerse import BibleVerse
 
 ## Test cases for the BibleVerse dataclass.
 class BibleVerseTests(unittest.TestCase):

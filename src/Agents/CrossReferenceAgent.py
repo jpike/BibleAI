@@ -107,8 +107,9 @@ class CrossReferenceAgent:
         
         # Simple parsing for common formats like "John 3:16"
         # Pattern for "Book Chapter:Verse" format - handles numbered books and multi-word book names
-        pattern = r'(\d*\s*\w+(?:\s+\w+)*)\s+(\d+):(\d+)'
-        match = re.search(pattern, reference)
+        # Must end with verse number, not followed by additional content
+        pattern = r'(\d*\s*\w+(?:\s+\w+)*)\s+(\d+):(\d+)$'
+        match = re.search(pattern, reference.strip())
         
         if match:
             book = match.group(BOOK_GROUP_INDEX)
@@ -144,15 +145,21 @@ class CrossReferenceAgent:
     ## @param[in] text - Verse text to extract terms from.
     ## @return List of key terms.
     def _ExtractKeyTerms(self, text: str) -> list[str]:
-        # Simple approach: extract words longer than 4 characters
-        words = text.split()
-        key_terms = [word.lower() for word in words if len(word) > MIN_WORD_LENGTH_FOR_KEYWORDS]
+        import re
+        
+        # Remove punctuation and split into words
+        clean_text = re.sub(r'[^\w\s]', ' ', text)
+        words = clean_text.split()
+        
+        # Extract words with length greater than or equal to 4 characters
+        key_terms = [word.lower() for word in words if len(word) >= MIN_WORD_LENGTH_FOR_KEYWORDS]
         
         # Remove common words
         common_words = {'which', 'that', 'this', 'with', 'from', 'they', 'have', 'were', 'said', 'unto', 'them', 'will', 'shall'}
         key_terms = [term for term in key_terms if term not in common_words]
         
-        return key_terms[:DEFAULT_KEYWORD_COUNT]  # Return top 5 terms
+        # Return all terms to ensure we don't miss any important ones
+        return key_terms
     
     ## Format verses for LLM analysis.
     ## @param[in] verses - List of Bible verses to format.

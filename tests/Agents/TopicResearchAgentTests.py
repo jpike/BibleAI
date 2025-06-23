@@ -237,6 +237,18 @@ class TopicResearchAgentTests(unittest.TestCase):
         # Mock LLM response with empty keywords
         self.mock_llm_client.GenerateResponse.return_value = ""
         
+        # Mock Bible parser response for empty keywords
+        mock_verses = [
+            BibleVerse("KJV", "1Jo", 4, 8, "He that loveth not knoweth not God; for God is love.", "1Jo.4.8")
+        ]
+        self.mock_bible_parser.GetVersesByTopicKeywords.return_value = mock_verses
+        
+        # Mock LLM response for analysis
+        self.mock_llm_client.GenerateResponse.side_effect = [
+            "",  # Keywords (empty)
+            "Analysis..."  # Analysis
+        ]
+        
         # Test the research
         result = self.agent.ResearchTopic("love", "KJV")
         
@@ -247,6 +259,18 @@ class TopicResearchAgentTests(unittest.TestCase):
     def test_WhitespaceOnlyKeywords(self):
         # Mock LLM response with whitespace-only keywords
         self.mock_llm_client.GenerateResponse.return_value = "   \n  \n  "
+        
+        # Mock Bible parser response for empty keywords
+        mock_verses = [
+            BibleVerse("KJV", "1Jo", 4, 8, "He that loveth not knoweth not God; for God is love.", "1Jo.4.8")
+        ]
+        self.mock_bible_parser.GetVersesByTopicKeywords.return_value = mock_verses
+        
+        # Mock LLM response for analysis
+        self.mock_llm_client.GenerateResponse.side_effect = [
+            "   \n  \n  ",  # Keywords (whitespace-only)
+            "Analysis..."  # Analysis
+        ]
         
         # Test the research
         result = self.agent.ResearchTopic("love", "KJV")

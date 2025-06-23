@@ -39,18 +39,19 @@ class TopicResearchAgent:
             {"role": "user", "content": keyword_prompt}
         ])
         
-        if not keywords_response:
+        if keywords_response is None:
             return AgentResponse(
                 success=False,
                 content="Failed to generate keywords for topic research.",
                 verses_used=[],
                 metadata={"topic": topic}
             )
+        # Extract keywords (handle empty response gracefully)
+        keywords = []
+        if keywords_response:
+            keywords = [kw.strip() for kw in keywords_response.split('\n') if kw.strip()]
         
-        # Extract keywords
-        keywords = [kw.strip() for kw in keywords_response.split('\n') if kw.strip()]
-        
-        # Search for relevant verses
+        # Search for relevant verses (even with empty keywords)
         relevant_verses = self.BibleParser.GetVersesByTopicKeywords(
             keywords, translation=translation, max_results=max_verses * 2
         )

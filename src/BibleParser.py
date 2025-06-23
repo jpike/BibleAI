@@ -95,6 +95,9 @@ class BibleParser:
             
             verse_count += 1
             
+        # Store in Translations dictionary
+        self.Translations[translation_name] = verses_by_book
+            
         print(f"Parsed {verse_count} verses from {translation_name}")
         return verses_by_book
     
@@ -112,8 +115,8 @@ class BibleParser:
         for xml_file in xml_files:
             translation_name = xml_file.name
             try:
-                verses_by_book = self.ParseTranslation(translation_name)
-                self.Translations[translation_name] = verses_by_book
+                # ParseTranslation already stores in self.Translations
+                self.ParseTranslation(translation_name)
             except Exception as e:
                 print(f"Error parsing {translation_name}: {e}")
                 
@@ -140,7 +143,17 @@ class BibleParser:
         query_lower = query.lower()
         results = []
         
-        translations_to_search = [translation] if translation else self.Translations.keys()
+        if translation:
+            # Handle both filename format ('test.xml') and code format ('TEST')
+            is_xml_filename = translation.endswith('.xml')
+            if is_xml_filename:
+                translation_filename = translation  # Already in filename format
+            else:
+                translation_filename = translation.lower() + '.xml'  # Convert code to filename
+            
+            translations_to_search = [translation_filename]
+        else:
+            translations_to_search = self.Translations.keys()
         
         for trans_name in translations_to_search:
             if trans_name not in self.Translations:
@@ -166,20 +179,23 @@ class BibleParser:
         keywords_lower = [kw.lower() for kw in keywords]
         results = []
         
-        translations_to_search = [translation] if translation else self.Translations.keys()
+        if translation:
+            # Handle both filename format ('test.xml') and code format ('TEST')
+            is_xml_filename = translation.endswith('.xml')
+            if is_xml_filename:
+                translation_filename = translation  # Already in filename format
+            else:
+                translation_filename = translation.lower() + '.xml'  # Convert code to filename
+            
+            translations_to_search = [translation_filename]
+        else:
+            translations_to_search = self.Translations.keys()
         
         for trans_name in translations_to_search:
-            # Handle both filename format ('kjv.xml') and code format ('KJV')
-            is_xml_filename = trans_name.endswith('.xml')
-            if is_xml_filename:
-                translation_filename = trans_name  # Already in filename format
-            else:
-                translation_filename = trans_name.lower() + '.xml'  # Convert code to filename
-
-            if translation_filename not in self.Translations:
+            if trans_name not in self.Translations:
                 continue
 
-            for book_verses in self.Translations[translation_filename].values():
+            for book_verses in self.Translations[trans_name].values():
                 for verse in book_verses:
                     verse_text_lower = verse.text.lower()
                     if any(keyword in verse_text_lower for keyword in keywords_lower):

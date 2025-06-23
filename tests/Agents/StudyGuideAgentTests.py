@@ -31,12 +31,24 @@ class StudyGuideAgentTests(unittest.TestCase):
         self.assertEqual(agent.LlmClient, self.mock_llm_client)
     
     ## Test successful comprehensive study guide creation.
-    def test_SuccessfulComprehensiveGuide(self):
+    @patch('src.Agents.StudyGuideAgent.TopicResearchAgent')
+    def test_SuccessfulComprehensiveGuide(self, mock_topic_agent_class):
+        # Mock topic research agent
+        mock_topic_agent = Mock()
+        mock_topic_agent_class.return_value = mock_topic_agent
+        
         # Mock topic research response
         mock_verses = [
             BibleVerse("KJV", "1Jo", 4, 8, "He that loveth not knoweth not God; for God is love.", "1Jo.4.8"),
             BibleVerse("KJV", "1Co", 13, 4, "Charity suffereth long, and is kind.", "1Co.13.4")
         ]
+        successful_response = AgentResponse(
+            success=True,
+            content="Topic research successful",
+            verses_used=mock_verses,
+            metadata={"topic": "love"}
+        )
+        mock_topic_agent.ResearchTopic.return_value = successful_response
         
         # Mock LLM response for study guide
         self.mock_llm_client.GenerateResponse.return_value = "Comprehensive study guide content..."
@@ -60,11 +72,23 @@ class StudyGuideAgentTests(unittest.TestCase):
         self.assertIn("love", prompt)
     
     ## Test successful devotional study guide creation.
-    def test_SuccessfulDevotionalGuide(self):
+    @patch('src.Agents.StudyGuideAgent.TopicResearchAgent')
+    def test_SuccessfulDevotionalGuide(self, mock_topic_agent_class):
+        # Mock topic research agent
+        mock_topic_agent = Mock()
+        mock_topic_agent_class.return_value = mock_topic_agent
+        
         # Mock topic research response
         mock_verses = [
             BibleVerse("KJV", "1Jo", 4, 8, "He that loveth not knoweth not God; for God is love.", "1Jo.4.8")
         ]
+        successful_response = AgentResponse(
+            success=True,
+            content="Topic research successful",
+            verses_used=mock_verses,
+            metadata={"topic": "love"}
+        )
+        mock_topic_agent.ResearchTopic.return_value = successful_response
         
         # Mock LLM response for devotional guide
         self.mock_llm_client.GenerateResponse.return_value = "Devotional study guide content..."
@@ -85,11 +109,23 @@ class StudyGuideAgentTests(unittest.TestCase):
         self.assertIn("7-day devotional", prompt)
     
     ## Test successful theological study guide creation.
-    def test_SuccessfulTheologicalGuide(self):
+    @patch('src.Agents.StudyGuideAgent.TopicResearchAgent')
+    def test_SuccessfulTheologicalGuide(self, mock_topic_agent_class):
+        # Mock topic research agent
+        mock_topic_agent = Mock()
+        mock_topic_agent_class.return_value = mock_topic_agent
+        
         # Mock topic research response
         mock_verses = [
             BibleVerse("KJV", "1Jo", 4, 8, "He that loveth not knoweth not God; for God is love.", "1Jo.4.8")
         ]
+        successful_response = AgentResponse(
+            success=True,
+            content="Topic research successful",
+            verses_used=mock_verses,
+            metadata={"topic": "love"}
+        )
+        mock_topic_agent.ResearchTopic.return_value = successful_response
         
         # Mock LLM response for theological guide
         self.mock_llm_client.GenerateResponse.return_value = "Theological study guide content..."
@@ -110,11 +146,23 @@ class StudyGuideAgentTests(unittest.TestCase):
         self.assertIn("theological depth", prompt)
     
     ## Test study guide creation with default type.
-    def test_DefaultGuideType(self):
+    @patch('src.Agents.StudyGuideAgent.TopicResearchAgent')
+    def test_DefaultGuideType(self, mock_topic_agent_class):
+        # Mock topic research agent
+        mock_topic_agent = Mock()
+        mock_topic_agent_class.return_value = mock_topic_agent
+        
         # Mock topic research response
         mock_verses = [
             BibleVerse("KJV", "1Jo", 4, 8, "He that loveth not knoweth not God; for God is love.", "1Jo.4.8")
         ]
+        successful_response = AgentResponse(
+            success=True,
+            content="Topic research successful",
+            verses_used=mock_verses,
+            metadata={"topic": "love"}
+        )
+        mock_topic_agent.ResearchTopic.return_value = successful_response
         
         # Mock LLM response
         self.mock_llm_client.GenerateResponse.return_value = "Default guide content..."
@@ -126,11 +174,23 @@ class StudyGuideAgentTests(unittest.TestCase):
         self.assertEqual(result.metadata["guide_type"], "comprehensive")
     
     ## Test study guide creation with unknown type.
-    def test_UnknownGuideType(self):
+    @patch('src.Agents.StudyGuideAgent.TopicResearchAgent')
+    def test_UnknownGuideType(self, mock_topic_agent_class):
+        # Mock topic research agent
+        mock_topic_agent = Mock()
+        mock_topic_agent_class.return_value = mock_topic_agent
+        
         # Mock topic research response
         mock_verses = [
             BibleVerse("KJV", "1Jo", 4, 8, "He that loveth not knoweth not God; for God is love.", "1Jo.4.8")
         ]
+        successful_response = AgentResponse(
+            success=True,
+            content="Topic research successful",
+            verses_used=mock_verses,
+            metadata={"topic": "love"}
+        )
+        mock_topic_agent.ResearchTopic.return_value = successful_response
         
         # Mock LLM response
         self.mock_llm_client.GenerateResponse.return_value = "Default guide content..."

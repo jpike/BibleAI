@@ -33,7 +33,7 @@ class LlmClientTests(unittest.TestCase):
         client = LLMClient()
         self.assertEqual(client.BaseUrl, "http://localhost:1234/v1")
         self.assertEqual(client.ApiKey, "not-needed")
-        self.assertEqual(client.Timeout, 30)
+        self.assertEqual(client.Timeout, 600)
     
     ## Test URL normalization (removing trailing slash).
     def test_UrlNormalization(self):
